@@ -1,2 +1,1 @@
-# lost
-LoST Protocol v2
+# Location-to-Service Translation Protocol
