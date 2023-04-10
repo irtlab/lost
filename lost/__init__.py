@@ -1,4 +1,5 @@
 
+
 class LoSTResolver:
     '''LoST resolver service implementation
 
@@ -8,16 +9,6 @@ class LoSTResolver:
     communicates with the application via an inter-process communication channel
     (DBus). It could be also provided as local network service, e.g., as part of
     cloud services provided to applications running on the cloud infrastructure.
-    '''
-    pass
-
-
-class LoSTServer:
-    '''LoST server implementation
-
-    The LoST server resolves queries from LoST resolvers and processes service
-    publication requests from LoST publishers. LoST servers resolve queries
-    either iteratively or recursively.
     '''
     pass
 
