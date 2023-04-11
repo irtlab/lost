@@ -20,7 +20,8 @@ requires-python = ">=3.11"
 dependencies = [
   "flask",
   "click",
-  "psycopg2",
+  "psycopg[binary]",
+  "psycopg[poll]",
   "flask-cors",
   "lxml"
 ]
@@ -28,7 +29,6 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "mypy",
-  "types-psycopg2",
   "types-flask-cors",
   "types-lxml"
 ]

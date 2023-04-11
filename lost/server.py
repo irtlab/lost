@@ -2,21 +2,20 @@ from __future__ import annotations
 import sys
 import os
 import click
-import psycopg2
-import psycopg2.extras
-import psycopg2.errors
+import atexit
+import psycopg
 import lxml.objectify
 import lxml.etree
 import uuid
 import base64
+from psycopg_pool import ConnectionPool
+from psycopg.adapt import Loader, Dumper
 from datetime import datetime, timedelta
 from lxml.etree import Element, SubElement, XML
 from collections import namedtuple
 from abc import ABC, abstractmethod
-from psycopg2.pool import ThreadedConnectionPool
 from flask import Flask, request, abort, Response
-from werkzeug.exceptions import BadRequest
-from contextlib import contextmanager
+from werkzeug.exceptions import BadRequest, NotFound
 from flask_cors import CORS
 
 
@@ -31,15 +30,11 @@ NAMESPACE_MAP  = {
 }
 
 
-# Add support for serialization and deserialization of JSON columns
-psycopg2.extensions.register_adapter(dict, psycopg2.extras.Json)
-
-
 # Create a pool of persistent PostgreSQL database connections. When we are done
 # with a PostgreSQL connection, we simply return it to the pool without closing
 # the connection. This helps avoid the need to open a new database connection
 # for every request.
-db_connection_pool: ThreadedConnectionPool
+pool: ConnectionPool
 
 
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
@@ -47,37 +42,32 @@ db_connection_pool: ThreadedConnectionPool
 lost_server: dict[str, LoSTServer] = dict()
 
 
-class PQLogger:
-    '''Log PostgreSQL warnings to standard output.
-
-    Instances of this class are assigned to the notices property on psycopg2
-    connections and print any warnings received from the PostgreSQL database to
-    the standard output.
-    '''
-    def append(self, message):
-        print(message.strip())
-
-
-class GUID(object):
+class GUID:
     '''A globally unique identifier.
 
     A custom implementation of a globally unique identifier. Backed by UUID
     version 4 (randomly generated) with a base64 string representation.
     '''
-    def __init__(self, v):
-        if v is None:
+    def __init__(self, *args):
+        if len(args) == 0:
             self.value = uuid.uuid4()
-        elif isinstance(v, uuid.UUID):
-            self.value = v
-        elif isinstance(v, GUID):
-            self.value = v.value
-        elif isinstance(v, str):
-            if len(v) == 22:
-                self.value = uuid.UUID(bytes=base64.urlsafe_b64decode(f'{v}=='), version=4)
+        elif len(args) == 1:
+            v = args[0]
+            if v is None:
+                self.value = uuid.uuid4()
+            if isinstance(v, uuid.UUID):
+                self.value = v
+            elif isinstance(v, GUID):
+                self.value = v.value
+            elif isinstance(v, str):
+                if len(v) == 22:
+                    self.value = uuid.UUID(bytes=base64.urlsafe_b64decode(f'{v}=='), version=4)
+                else:
+                    self.value = uuid.UUID('{%s}' % v)
             else:
-                self.value = uuid.UUID('{%s}' % v)
+                raise Exception("Unsupported GUID value representation")
         else:
-            raise Exception('Unsupported GUID value representation')
+            raise Exception("Unsupported number of GUID parameters")
 
     def __str__(self):
         return base64.urlsafe_b64encode(self.value.bytes)[:-2].decode('ascii')
@@ -85,91 +75,21 @@ class GUID(object):
     def __eq__(self, obj):
         return self.value == obj.value
 
-    def getquoted(self):
-        '''Serialization support for psycopg2.'''
-        return f"'{self.value}'::uuid".encode('UTF-8')
 
-    def __conform__(self, proto):
-        '''Serialization support for psycopg2.'''
-        if proto is psycopg2.extensions.ISQLQuote:
-            return self
+def adapt_for_guid(con: psycopg.Connection):
+    class GUIDLoader(Loader):
+        def load(self, data):
+            return GUID(str(data, 'ascii'))
 
 
-def recreate_guid_from_psycopg():
-    '''Re-create GUID objects from PostgreSQL UUID oids.
+    class GUIDDumper(Dumper):
+        oid = psycopg.adapters.types["uuid"].oid
 
-    When PostgreSQL gives us UUID data, we convert it to instances of GUID
-    objects rather than the standard uuid object.
-    '''
-    ext = psycopg2.extensions
-    t1 = ext.new_type((2950, ), "GUID",
-            lambda data, cursor: data and GUID(data) or None)
-    t2 = ext.new_array_type((2951,), "GUID[]", t1)
+        def dump(self, data):
+            return f"{data.value}".encode('ascii')
 
-    ext.register_type(t1)
-    ext.register_type(t2)
-
-# When loading data from Psycopg, create GUID objects for UUID data
-recreate_guid_from_psycopg()
-
-# Add support for serialization and deserialization of JSON columns
-psycopg2.extensions.register_adapter(dict, psycopg2.extras.Json)
-
-
-
-def find_connection(uid=None) -> psycopg2.connection:
-    '''Retrieve a working (connected) connection from pool.
-
-    If a connection is shutdown administratively on the PostgreSQL server, the
-    connection pool may return a connection that is no longer connected and that
-    will raise an exception when the client attempts to use it. Since we need to
-    set a variable containing the uid of the authorized user at the beginning of
-    the connection, we use that step to detect whether the connection retrieved
-    from the pool is connected (the operation will fail if not). If we get a
-    disconnected connection, we repeat the step. If we need to repeat more times
-    than maxconn of the connection pool, no working connection can be retrieved.
-    '''
-    for i in range(db_connection_pool.maxconn + 1):
-        db = db_connection_pool.getconn()
-        db.notices = PQLogger()
-        db.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_SERIALIZABLE)
-        try:
-            # If we have a uid, set the session.uid variable to it, otherwise
-            # reset the variable.
-            cur = db.cursor()
-            if uid is not None:
-                cur.execute('set session.uid=%s', (uid,))
-            else:
-                cur.execute('reset session.uid')
-
-            # If setting/resetting the variable succeeded, this is a working
-            # connection and we can return it to the caller.
-            return db
-        except (psycopg2.errors.AdminShutdown, psycopg2.InterfaceError) as e:
-            # On an exception, put the connection back to the pool and re-try if
-            # we have any loop iterations left.
-            db_connection_pool.putconn(db)
-        finally:
-            # Close the temporary cursor used to set/reset the session.uid
-            # variable if we have one.
-            if cur:
-                cur.close()
-    else:
-        # If we need to iterate more times than the size of the connection pool,
-        # we cannot get a working connection from the pool and must raise an
-        # exception.
-        raise Exception("Couldn't get usable PostgreSQL connection from the pool")
-
-
-@contextmanager
-def db_cursor():
-    db = find_connection()
-    try:
-        with db:
-            with db.cursor() as cur:
-                yield cur
-    finally:
-        db_connection_pool.putconn(db)
+    con.adapters.register_loader('uuid', GUIDLoader)
+    con.adapters.register_dumper(GUID, GUIDDumper)
 
 
 # The order of coordinate axes across various standards is as follows:
@@ -221,14 +141,20 @@ def service_boundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
 
 class GeographicLoSTServer(LoSTServer):
     def find_point(self, service, point: Point):
-        with db_cursor() as db:
-            db.execute('''
+        with pool.connection() as con:
+            cur = con.execute('''
                 SELECT m.id, m.service, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
                 FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
-                WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))''',
-                (f'Point({point.lon} {point.lat})',))
+                WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))
+                    and m.service = %s''',
+                (f'Point({point.lon} {point.lat})', service))
 
-            id, service, modified, attrs, shape = db.fetchone()
+            row = cur.fetchone()
+
+        if row is None:
+            raise NotFound()
+
+        id, service, modified, attrs, shape = row
 
         res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
         mapping = SubElement(res, 'mapping',
@@ -274,9 +200,9 @@ CORS(app)
 
 @app.route("/", methods=["GET"])
 def ping():
-    with db_cursor() as db:
-        db.execute("SELECT NOW()")
-        res = db.fetchone()
+    with pool.connection() as con:
+        res = con.execute("SELECT NOW()").fetchone()
+        assert res is not None
         return f"Database says: {res[0]}"
 
 
@@ -322,7 +248,7 @@ def cli(ctx):
 @click.option('--civic-table', default='civic', help='Name of civic address mapping table', show_default=True)
 @click.option('--server-id', default='lost-server', help='Unique ID of the LoST server', show_default=True)
 def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
-    global db_connection_pool, lost_server
+    global pool, lost_server
 
     if db_url is None:
         try:
@@ -332,12 +258,13 @@ def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
             sys.exit(1)
 
     try:
-        # ThreadedConnection pool will attempt to connect to the database. If
-        # the attempt fails, an exception will be raised. We catch the exception
-        # and print an informative message. This will allow us to fail early if
-        # the database is unavailable and not later when the first request
-        # arrives.
-        db_connection_pool = ThreadedConnectionPool(min_con, max_con, db_url)
+        pool = ConnectionPool(db_url, min_size=min_con, max_size=max_con, num_workers=1, kwargs={
+            'autocommit': True
+        }, configure=adapt_for_guid)
+        atexit.register(lambda: pool.close())
+        # Wait for the connection pool to create its first connections. We want
+        # to fail early if the database cannot be connected for some reason.
+        pool.wait()
     except Exception as e:
         print(f"Error while connecting to datababase '{db_url}': {e}")
         sys.exit(1)
@@ -367,20 +294,19 @@ def init_db(db_url, drop):
             print("Error: Please configure database via --db-url or environment variable DB_URL")
             sys.exit(1)
 
-    with psycopg2.connect(db_url) as db:
-        cur = db.cursor()
+    with psycopg.connect(db_url, autocommit=True) as con:
         if drop:
             print("Dropping modification trigger on table mapping")
-            cur.execute('DROP TRIGGER IF EXISTS update_modification_timestamp ON mapping')
+            con.execute('DROP TRIGGER IF EXISTS update_modification_timestamp ON mapping')
 
             print("Dropping table mappping")
-            cur.execute('DROP TABLE IF EXISTS mapping')
+            con.execute('DROP TABLE IF EXISTS mapping')
 
             print("Dropping function update_modification_timestamp()")
-            cur.execute('DROP FUNCTION IF EXISTS update_modification_timestamp()')
+            con.execute('DROP FUNCTION IF EXISTS update_modification_timestamp()')
 
         print("Creating function update_modification_timestamp()")
-        cur.execute('''
+        con.execute('''
             CREATE FUNCTION public.update_modification_timestamp() RETURNS trigger
                 LANGUAGE plpgsql
                 AS $$
@@ -392,7 +318,7 @@ def init_db(db_url, drop):
         ''')
 
         print("Creating table mapping")
-        cur.execute('''
+        con.execute('''
             CREATE TABLE mapping (
                 id       uuid         PRIMARY KEY DEFAULT uuid_generate_v4(),
                 service  text         NOT NULL,
@@ -403,9 +329,10 @@ def init_db(db_url, drop):
             )''')
 
         print("Creating modification trigger on table mapping")
-        cur.execute('''
+        con.execute('''
             CREATE TRIGGER update_modification_timestamp BEFORE UPDATE ON mapping FOR EACH ROW EXECUTE FUNCTION public.update_modification_timestamp();
         ''')
+
 
 if __name__ == '__main__':
     cli()
