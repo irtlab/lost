@@ -1,4 +1,15 @@
 
+MIME_TYPE      = 'application/lost+xml'
+LOST_NAMESPACE = 'urn:ietf:params:xml:ns:lost1'
+GML_NAMESPACE  = 'http://www.opengis.net/gml'
+XML_NAMESPACE  = 'http://www.w3.org/XML/1998/namespace'
+SRS_URN        = 'urn:ogc:def:crs:EPSG::4326'
+
+NAMESPACE_MAP  = {
+    None: LOST_NAMESPACE,
+    'gml': GML_NAMESPACE,
+    'xml': XML_NAMESPACE
+}
 
 class LoSTResolver:
     '''LoST resolver service implementation

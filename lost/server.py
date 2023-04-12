@@ -6,28 +6,18 @@ import atexit
 import psycopg
 import lxml.objectify
 import lxml.etree
-import uuid
-import base64
 from psycopg_pool import ConnectionPool
 from psycopg.adapt import Loader, Dumper
 from datetime import datetime, timedelta
 from lxml.etree import Element, SubElement, XML
 from collections import namedtuple
 from abc import ABC, abstractmethod
-from flask import Flask, request, abort, Response
-from werkzeug.exceptions import BadRequest, NotFound
+from flask import Flask, request, Response, current_app
 from flask_cors import CORS
-
-
-MIME_TYPE      = 'application/lost+xml'
-LOST_NAMESPACE = 'urn:ietf:params:xml:ns:lost1'
-GML_NAMESPACE  = 'http://www.opengis.net/gml'
-XML_NAMESPACE  = 'http://www.w3.org/XML/1998/namespace'
-NAMESPACE_MAP  = {
-    None: LOST_NAMESPACE,
-    'gml': GML_NAMESPACE,
-    'xml': XML_NAMESPACE
-}
+from .guid import GUID
+from . import GML_NAMESPACE, LOST_NAMESPACE, XML_NAMESPACE, NAMESPACE_MAP, MIME_TYPE, SRS_URN
+from .errors import (LoSTError, BadRequest, NotFound, LocationProfileUnrecognized,
+    NotImplemented, GeometryNotImplemented, SRSInvalid)
 
 
 # Create a pool of persistent PostgreSQL database connections. When we are done
@@ -40,40 +30,6 @@ pool: ConnectionPool
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
 # civic.
 lost_server: dict[str, LoSTServer] = dict()
-
-
-class GUID:
-    '''A globally unique identifier.
-
-    A custom implementation of a globally unique identifier. Backed by UUID
-    version 4 (randomly generated) with a base64 string representation.
-    '''
-    def __init__(self, *args):
-        if len(args) == 0:
-            self.value = uuid.uuid4()
-        elif len(args) == 1:
-            v = args[0]
-            if v is None:
-                self.value = uuid.uuid4()
-            if isinstance(v, uuid.UUID):
-                self.value = v
-            elif isinstance(v, GUID):
-                self.value = v.value
-            elif isinstance(v, str):
-                if len(v) == 22:
-                    self.value = uuid.UUID(bytes=base64.urlsafe_b64decode(f'{v}=='), version=4)
-                else:
-                    self.value = uuid.UUID('{%s}' % v)
-            else:
-                raise Exception("Unsupported GUID value representation")
-        else:
-            raise Exception("Unsupported number of GUID parameters")
-
-    def __str__(self):
-        return base64.urlsafe_b64encode(self.value.bytes)[:-2].decode('ascii')
-
-    def __eq__(self, obj):
-        return self.value == obj.value
 
 
 def adapt_for_guid(con: psycopg.Connection):
@@ -115,11 +71,11 @@ class LoSTServer(ABC):
         self.table = table
 
     @abstractmethod
-    def find_service(self, req: lxml.objectify.ObjectifiedElement):
-        pass
+    def findService(self, req: lxml.objectify.ObjectifiedElement):
+        raise NotImplemented('<findService> not implemented')
 
 
-def service_boundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
+def serviceBoundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
     '''Convert ST_AsGML output to a service boundary object
 
     This function constructs a serviceBoundary XML element tree from the output
@@ -140,7 +96,7 @@ def service_boundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
 
 
 class GeographicLoSTServer(LoSTServer):
-    def find_point(self, service, point: Point):
+    def findPoint(self, service, point: Point):
         with pool.connection() as con:
             cur = con.execute('''
                 SELECT m.id, m.service, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
@@ -152,7 +108,7 @@ class GeographicLoSTServer(LoSTServer):
             row = cur.fetchone()
 
         if row is None:
-            raise NotFound()
+            raise NotFound('No suitable mapping found')
 
         id, service, modified, attrs, shape = row
 
@@ -169,33 +125,64 @@ class GeographicLoSTServer(LoSTServer):
             dn.text = attrs['displayName']
 
         SubElement(mapping, 'service').text = service
-        mapping.append(service_boundary(shape))
+        mapping.append(serviceBoundary(shape))
 
         for uri in attrs.get('uri', []):
             SubElement(mapping, 'uri').text = uri
 
         return res
 
-    def find_service(self, req: lxml.objectify.ObjectifiedElement):
+    def findService(self, req: lxml.objectify.ObjectifiedElement):
         service = req.service.text
         if service is not None:
             service = service.strip()
 
         geom = req.location.getchildren()[0]
+
+        if geom.attrib.get('srsName') != SRS_URN:
+            raise SRSInvalid('Unsupported SRS name')
+
         if geom.tag == f'{{{GML_NAMESPACE}}}Point':
             lat, lon = (geom.pos.text or '').strip().split()
-            return self.find_point(service, Point(lon, lat))
+            return self.findPoint(service, Point(lon, lat))
         else:
-            raise BadRequest('Unsupported geometry type')
+            raise GeometryNotImplemented(f'Unsupported geometry type {geom.tag}')
 
 
 class CivicLoSTServer(LoSTServer):
-    def find_service(self, doc):
+    def findService(self, doc):
         pass
 
 
 app = Flask(__name__)
 CORS(app)
+
+
+def xmlify(doc) -> Response:
+    lxml.objectify.deannotate(doc, cleanup_namespaces=True, xsi_nil=True)
+    return Response(lxml.etree.tostring(doc, encoding='UTF-8',
+        pretty_print=True, xml_declaration=True), mimetype=MIME_TYPE)
+
+
+def findService(req):
+    profile = req.location.attrib['profile']
+    try:
+        server = lost_server[profile]
+        return server.findService(req)
+    except KeyError as e:
+        raise LocationProfileUnrecognized(f"Unsupported location profile '{profile}'") from e
+
+
+def getServiceBoundary(req):
+    raise NotImplemented('<getServiceBoundary> not implemented')
+
+
+def listServices(req):
+    raise BadRequest('<listServices> not implemented')
+
+
+def listServicesByLocation(req):
+    raise BadRequest('<listServicesByLocation> not implemented')
 
 
 @app.route("/", methods=["GET"])
@@ -207,25 +194,31 @@ def ping():
 
 
 @app.route("/", methods=["POST"])
-def submit():
+def lost_request():
     if request.mimetype != MIME_TYPE:
-        abort(400, 'Unsupported content type')
+        raise BadRequest('Unknown Content-Type')
 
-    req = lxml.objectify.fromstring(request.data)
+    try:
+        req = lxml.objectify.fromstring(request.data)
+    except lxml.etree.XMLSyntaxError as e:
+        raise BadRequest(f'XML syntax error: {e}') from e
 
-    if req.tag == f"{{{LOST_NAMESPACE}}}findService":
-        profile = req.location.attrib['profile']
-        try:
-            server = lost_server[profile]
-        except KeyError:
-            abort(400, f"Unsupported location profile '{profile}'")
+    if not req.tag.startswith(f'{{{LOST_NAMESPACE}}}'):
+        raise BadRequest('Unsupported XML namespace')
 
-        res = server.find_service(req)
-        lxml.objectify.deannotate(res, cleanup_namespaces=True, xsi_nil=True)
-        return Response(lxml.etree.tostring(res, encoding='UTF-8',
-            pretty_print=True, xml_declaration=True), mimetype=MIME_TYPE)
-    else:
-        abort(400, f'Unsupported request type "{req.tag}"')
+    type_ = req.tag[len(LOST_NAMESPACE) + 2:]
+    if   type_ == 'findService':            res = findService(req)
+    elif type_ == 'getServiceBoundary':     res = getServiceBoundary(req)
+    elif type_ == 'listServices':           res = listServices(req)
+    elif type_ == 'listServicesByLocation': res = listServicesByLocation(req)
+    else: raise NotImplemented(f'Unsupported request type "{type_}"')
+
+    return xmlify(res)
+
+
+@app.errorhandler(LoSTError)
+def lost_error(exc: LoSTError):
+    return xmlify(exc.to_xml(current_app.config.get('server-id', None)))
 
 
 @click.group(invoke_without_command=True)
@@ -280,6 +273,7 @@ def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
         print("Instantiating a LoST server for the 'civic' profile")
         lost_server['civic'] = CivicLoSTServer(server_id, civic_table)
 
+    app.config['server-id'] = server_id
     app.run('0.0.0.0', port, debug=True, threaded=True)
 
 
