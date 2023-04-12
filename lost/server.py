@@ -10,7 +10,6 @@ from psycopg_pool import ConnectionPool
 from psycopg.adapt import Loader, Dumper
 from datetime import datetime, timedelta
 from lxml.etree import Element, SubElement, XML
-from collections import namedtuple
 from abc import ABC, abstractmethod
 from flask import Flask, request, Response, current_app
 from flask_cors import CORS
@@ -18,6 +17,7 @@ from .guid import GUID
 from . import GML_NAMESPACE, LOST_NAMESPACE, XML_NAMESPACE, NAMESPACE_MAP, MIME_TYPE, SRS_URN
 from .errors import (LoSTError, BadRequest, NotFound, LocationProfileUnrecognized,
     NotImplemented, GeometryNotImplemented, SRSInvalid)
+from .geometry import Point
 
 
 # Create a pool of persistent PostgreSQL database connections. When we are done
@@ -46,15 +46,6 @@ def adapt_for_guid(con: psycopg.Connection):
 
     con.adapters.register_loader('uuid', GUIDLoader)
     con.adapters.register_dumper(GUID, GUIDDumper)
-
-
-# The order of coordinate axes across various standards is as follows:
-# GeoJSON:            [lon, lat]
-# PostGIS (WKT, WKB): [lon, lat]
-# KML:                [lon, lat]
-# EPSG:4326           [lat, lon]
-# GML:                [lat, lon]
-Point = namedtuple('Point', ['lon', 'lat'])
 
 
 class LoSTServer(ABC):
