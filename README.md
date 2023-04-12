@@ -20,3 +20,15 @@ Install the lost package in editable mode:
 ```
 pip install -e .
 ```
+Set the connection string for your PostgreSQL database in an environment variable DB_URL:
+```
+export DB_URL="host=<host> user=lostsrv password=<password> sslmode=require dbname=lost"
+```
+Run the LoST server. The server will listen on the loopback interface (127.0.0.1) and port 5000 by default:
+```
+lost-server
+```
+Use the lost-seeker program to send a LoST request to the server:
+```
+lost-seeker find-service -- lost -73.96094 40.80965
+```
