@@ -16,12 +16,12 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
   "flask",
   "click",
   "psycopg[binary]",
-  "psycopg[poll]",
+  "psycopg[pool]",
   "flask-cors",
   "lxml"
 ]
