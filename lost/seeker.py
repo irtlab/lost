@@ -16,8 +16,10 @@ def seeker(ctx, server_url):
 @click.argument('service', type=str)
 @click.argument('longitude', type=float)
 @click.argument('latitude', type=float)
-def find_service(client: LoSTClient, service, longitude, latitude):
-    uri = client.findService(service, Point(longitude, latitude))
+@click.option('--recursive/--redirect', default=True, help='Configure recursive or redirect mode', show_default=True)
+@click.option('--reference/--value', default=False, help='Receive service boundary by reference or value', show_default=True)
+def find_service(client: LoSTClient, service, longitude, latitude, recursive, reference):
+    uri = client.findService(service, Point(longitude, latitude), recursive=recursive, reference=reference)
     click.echo('\n'.join(uri))
 
 
