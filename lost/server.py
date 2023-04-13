@@ -123,6 +123,9 @@ class GeographicLoSTServer(LoSTServer):
 
         return res
 
+    def findPolygon(self, service, polygon):
+        raise NotImplemented('')
+
     def findService(self, req: lxml.objectify.ObjectifiedElement):
         service = req.service.text
         if service is not None:

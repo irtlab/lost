@@ -17,8 +17,8 @@ def seeker(ctx, server_url):
 @click.argument('longitude', type=float)
 @click.argument('latitude', type=float)
 def find_service(client: LoSTClient, service, longitude, latitude):
-    res = client.findService(service, Point(longitude, latitude))
-    print(res)
+    uri = client.findService(service, Point(longitude, latitude))
+    click.echo('\n'.join(uri))
 
 
 @seeker.command()
@@ -40,6 +40,7 @@ def cli():
     except Exception as e:
         click.echo(f'Error: {e}')
         sys.exit(1)
+
 
 if __name__ == '__main__':
     cli()

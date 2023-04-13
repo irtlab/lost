@@ -1,3 +1,6 @@
+import sys
+import inspect
+import lxml.objectify
 from lxml.etree import Element, SubElement
 from . import NAMESPACE_MAP, LOST_NAMESPACE, XML_NAMESPACE
 
@@ -7,18 +10,36 @@ class LoSTError(Exception):
     '''
     type = 'error'
 
-
-    def __init__(self, message):
+    def __init__(self, message: str | None = None):
         self.message = message
-
 
     def to_xml(self, source=None):
         res = Element(f'{{{LOST_NAMESPACE}}}errors', nsmap=NAMESPACE_MAP)
-        err = SubElement(res, self.type, message=self.message)
+        err = SubElement(res, self.type)
+
+        if self.message is not None:
+            err.set('message', self.message)
+
         if source is not None:
             err.set('source', source)
+
         err.set(f'{{{XML_NAMESPACE}}}lang', 'en')
         return res
+
+    @classmethod
+    def raise_for_errors(cls, errors: lxml.objectify.ObjectifiedElement):
+        if errors.tag != f'{{{LOST_NAMESPACE}}}errors':
+            return
+
+        error = errors.getchildren()[0]
+        type_ = error.tag[len(LOST_NAMESPACE) + 2:]
+        message = error.attrib.get('message', None)
+
+        for _, cls in inspect.getmembers(sys.modules[__name__], inspect.isclass):
+            if cls.__base__ is LoSTError and cls.type == type_:
+                raise cls(message)
+
+        raise LoSTError(message)
 
 
 class BadRequest(LoSTError):

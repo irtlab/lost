@@ -5,6 +5,8 @@ GML_NAMESPACE  = 'http://www.opengis.net/gml'
 XML_NAMESPACE  = 'http://www.w3.org/XML/1998/namespace'
 SRS_URN        = 'urn:ogc:def:crs:EPSG::4326'
 
+# This is a namespace map passed as a parameter passed to the various lxml
+# function. It declares all the XML namespaces used in LoST XML documents.
 NAMESPACE_MAP  = {
     None: LOST_NAMESPACE,
     'gml': GML_NAMESPACE,
