@@ -1,4 +1,5 @@
 import lxml.objectify
+import lxml.etree
 from urllib import request as http
 from lxml.etree import Element, SubElement
 from . import MIME_TYPE, LOST_NAMESPACE, NAMESPACE_MAP, GML_NAMESPACE, SRS_URN
@@ -48,17 +49,15 @@ class LoSTClient:
 
         return doc
 
-    def findService(self, service: str, location: Point, recursive=True, reference=False):
+    def findService(self, service: str, location: lxml.etree._Element, recursive=True, reference=False):
         doc = Element(f'{{{LOST_NAMESPACE}}}findService',
             nsmap=NAMESPACE_MAP,
             serviceBoundary="reference" if reference else "value",
             recursive="true" if recursive else "false")
 
         loc = SubElement(doc, 'location', profile="geodetic-2d")
+        loc.insert(0, location)
         SubElement(doc, 'service').text = service
-
-        point = SubElement(loc, f'{{{GML_NAMESPACE}}}Point', srsName=SRS_URN)
-        SubElement(point, f'{{{GML_NAMESPACE}}}pos').text = f'{location.lat} {location.lon}'
 
         res = self.submit(doc)
 

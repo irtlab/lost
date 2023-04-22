@@ -23,7 +23,8 @@ dependencies = [
   "psycopg[binary]",
   "psycopg[pool]",
   "flask-cors",
-  "lxml"
+  "lxml",
+  "pygml"
 ]
 
 [project.optional-dependencies]
