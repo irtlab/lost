@@ -124,7 +124,43 @@ class GeographicLoSTServer(LoSTServer):
         return res
 
     def findPolygon(self, service, polygon):
-        raise NotImplemented('')
+        polygon = lxml.etree.tostring(polygon, pretty_print=True).decode()
+
+        with pool.connection() as con:
+            cur = con.execute('''
+                    SELECT m.id, m.service, m.modified, m.attrs, ST_AsGML(s.geometries, 3) AS gml
+                    FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
+                    WHERE  ST_Intersects(s.geometries, ST_GeomFromGML(%s, 4326))
+                        and m.service = %s''',
+                    (polygon, service))
+    
+            
+            row = cur.fetchone()
+        
+        if row is None:
+            raise NotFound('No suitable mapping found')
+
+        id, service, modified, attrs, shape = row
+
+        res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
+        mapping = SubElement(res, 'mapping',
+            source=self.server_id,
+            sourceId=str(id),
+            lastUpdated=modified.isoformat(),
+            expires=(datetime.now() + timedelta(days=1)).isoformat())
+
+        if 'displayName' in attrs:
+            dn = SubElement(mapping, 'displayName')
+            dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
+            dn.text = attrs['displayName']
+
+        SubElement(mapping, 'service').text = service
+        mapping.append(serviceBoundary(shape))
+
+        for uri in attrs.get('uri', []):
+            SubElement(mapping, 'uri').text = uri
+
+        return res
 
     def findService(self, req: lxml.objectify.ObjectifiedElement):
         service = req.service.text
@@ -139,6 +175,10 @@ class GeographicLoSTServer(LoSTServer):
         if geom.tag == f'{{{GML_NAMESPACE}}}Point':
             lat, lon = (geom.pos.text or '').strip().split()
             return self.findPoint(service, Point(lon, lat))
+        
+        elif geom.tag == f'{{{GML_NAMESPACE}}}Polygon':
+            return self.findPolygon(service, geom)
+        
         else:
             raise GeometryNotImplemented(f'Unsupported geometry type {geom.tag}')
 
