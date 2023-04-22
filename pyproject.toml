@@ -24,14 +24,17 @@ dependencies = [
   "psycopg[pool]",
   "flask-cors",
   "lxml",
-  "pygml"
+  "pygml",
+  "requests",
+  "osm2geojson"
 ]
 
 [project.optional-dependencies]
 dev = [
   "mypy",
   "types-flask-cors",
-  "types-lxml"
+  "types-lxml",
+  "types-requests"
 ]
 
 [project.urls]
