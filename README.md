@@ -28,7 +28,11 @@ Run the LoST server. The server will listen on the loopback interface (127.0.0.1
 ```
 lost-server
 ```
-Use the lost-seeker program to send a LoST request to the server:
+Use the lost-seeker program to send a LoST request to the server. To send a point use:
 ```
 lost-seeker find-service -- lost -73.96094 40.80965
+```
+To send a polygon from a GeoJSON file use:
+```
+lost-seeker find-service -- lost data/cepsr-intersect.geojson
 ```
