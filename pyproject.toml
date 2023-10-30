@@ -44,3 +44,6 @@ dev = [
 [project.scripts]
 lost-server = "lost.server:cli"
 lost-seeker = "lost.seeker:cli"
+
+[tool.setuptools]
+packages = ["lost"]
