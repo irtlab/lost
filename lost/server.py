@@ -223,26 +223,22 @@ def cli(ctx):
             ctx.invoke(start)
     except KeyboardInterrupt:
         pass
-    pass
 
 
 @cli.command()
-@click.option('--port', '-p', type=int, help='Port number to listen on.')
-@click.option('--db-url', '-d', help='PostgreSQL database URL')
-@click.option('--max-con', default=16, help='Maximum number of DB connections', show_default=True)
-@click.option('--min-con', default=1, help='Minimum number of free DB connections', show_default=True)
-@click.option('--geo-table', default='geo', help='Name of geographic mapping table', show_default=True)
-@click.option('--civic-table', default='civic', help='Name of civic address mapping table', show_default=True)
-@click.option('--server-id', default='lost-server', help='Unique ID of the LoST server', show_default=True)
+@click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on.', show_default=True)
+@click.option('--db-url', '-d', envvar='DB_URL', help='PostgreSQL database URL')
+@click.option('--max-con', type=int, default=16, envvar='MAX_CON', help='Maximum number of DB connections', show_default=True)
+@click.option('--min-con', type=int, default=1, envvar='MIN_CON', help='Minimum number of free DB connections', show_default=True)
+@click.option('--geo-table', default='geo', envvar='GEO_TABLE', help='Name of geographic mapping table', show_default=True)
+@click.option('--civic-table', default='civic', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
+@click.option('--server-id', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
 def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
     global pool, lost_server
 
     if db_url is None:
-        try:
-            db_url = os.environ['DB_URL']
-        except KeyError:
-            print("Error: Please configure database via --db-url or environment variable DB_URL")
-            sys.exit(1)
+        print("Error: Please configure database via --db-url or environment variable DB_URL")
+        sys.exit(1)
 
     try:
         pool = ConnectionPool(db_url, min_size=min_con, max_size=max_con, num_workers=1, kwargs={
@@ -256,16 +252,11 @@ def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
         print(f"Error while connecting to datababase '{db_url}': {e}")
         sys.exit(1)
 
-    if port is None:
-        port = int(os.environ.get("PORT", 5000))
+    print("Instantiating a LoST server for the 'geodetic-2d' profile")
+    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, geo_table)
 
-    if geo_table != None:
-        print("Instantiating a LoST server for the 'geodetic-2d' profile")
-        lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, geo_table)
-
-    if civic_table != None:
-        print("Instantiating a LoST server for the 'civic' profile")
-        lost_server['civic'] = CivicLoSTServer(server_id, civic_table)
+    print("Instantiating a LoST server for the 'civic' profile")
+    lost_server['civic'] = CivicLoSTServer(server_id, civic_table)
 
     app.config['server-id'] = server_id
     app.run('0.0.0.0', port, debug=True, threaded=True)
