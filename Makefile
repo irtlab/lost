@@ -7,3 +7,7 @@ build:
 .PHONY:
 upload:
 	$(PYTHON) -m twine upload -r testpypi -u __token__ -p "$(TEST_PYPI_TOKEN)" dist/*
+
+.PHONY:
+docker:
+	docker build -t janakj.net/lost/server -f Dockerfile.server .
