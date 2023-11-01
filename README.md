@@ -1,6 +1,6 @@
 # LoST 2.0
 
-The Location-to-Service Translation (LoST) protocol [[RFC 5222]](https://www.rfc-editor.org/rfc/rfc5222.html) has been originally designed for emergency (911) calling services. The protocol provides a mapping service that translates the client's location, represented with a longitude and latitude pair, to a public safety answering point (PSAP) that provides emergency services at the client's location. The protocol was developed as part of the next-generation IP-based emergency calling architecture and has been standardized by the IETF.
+The Location-to-Service Translation (LoST) protocol [[RFC 5222]](https://www.rfc-editor.org/rfc/rfc5222.html) has been designed to map a longitude and latitude pair to a public safety answering point (PSAP) that provides emergency (911) services at the location. The protocol was standardized by the IETF as part of the next-generation IP-based emergency calling architecture.
 
 LoST 2.0 is an evolved version of the LoST protocol framework that solves a more general problem: discovering network services pertaining to an area of interest represented with a geographic object. LoST 2.0 is intended as a building block of geographically dispersed networked systems, e.g., large or heterogeneous cyber-physical systems. 
 
