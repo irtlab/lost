@@ -263,15 +263,13 @@ def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
 
 
 @cli.command('init-db')
-@click.option('--db-url', '-d', help='PostgreSQL database URL')
+@click.option('--db-url', '-d', envvar='DB_URL', help='PostgreSQL database URL')
 @click.option('--drop', '-D', default=False, is_flag=True, help='Drop tables if they exist first')
 def init_db(db_url, drop):
+
     if db_url is None:
-        try:
-            db_url = os.environ['DB_URL']
-        except KeyError:
-            print("Error: Please configure database via --db-url or environment variable DB_URL")
-            sys.exit(1)
+        print("Error: Please configure database via --db-url or environment variable DB_URL")
+        sys.exit(1)
 
     with psycopg.connect(db_url, autocommit=True) as con:
         if drop:
