@@ -48,3 +48,5 @@ grant usage on schema public to public;
 create role "lost-server" with login;
 grant all privileges on database lost to "lost-server";
 grant all on all tables in schema public to "lost-server";
+grant all on all sequences in schema public to "lost-server";
+
