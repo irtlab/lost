@@ -11,3 +11,4 @@ upload:
 .PHONY:
 docker:
 	docker build -t janakj.net/lost/server -f Dockerfile.server .
+	docker build -t janakj.net/lost/db     -f Dockerfile.db     .

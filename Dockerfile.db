@@ -1,0 +1,2 @@
+FROM janakj.net/postgres
+COPY data/sql/server.sql /docker-entrypoint-initdb.d/
