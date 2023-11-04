@@ -1,51 +1,25 @@
 from __future__ import annotations
 import sys
-import os
 import click
-import atexit
 import psycopg
 import lxml.objectify
 import lxml.etree
 from psycopg_pool import ConnectionPool
-from psycopg.adapt import Loader, Dumper
 from datetime import datetime, timedelta
 from lxml.etree import Element, SubElement, XML
 from abc import ABC, abstractmethod
 from flask import Flask, request, Response, current_app
 from flask_cors import CORS
-from .guid import GUID
 from . import GML_NAMESPACE, LOST_NAMESPACE, XML_NAMESPACE, NAMESPACE_MAP, MIME_TYPE, SRS_URN
 from .errors import (LoSTError, BadRequest, NotFound, LocationProfileUnrecognized,
     NotImplemented, GeometryNotImplemented, SRSInvalid)
 from .geometry import Point
-
-
-# Create a pool of persistent PostgreSQL database connections. When we are done
-# with a PostgreSQL connection, we simply return it to the pool without closing
-# the connection. This helps avoid the need to open a new database connection
-# for every request.
-pool: ConnectionPool
+from . import db
 
 
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
 # civic.
 lost_server: dict[str, LoSTServer] = dict()
-
-
-def adapt_for_guid(con: psycopg.Connection):
-    class GUIDLoader(Loader):
-        def load(self, data):
-            return GUID(str(data, 'ascii'))
-
-
-    class GUIDDumper(Dumper):
-        oid = psycopg.adapters.types["uuid"].oid
-
-        def dump(self, data):
-            return f"{data.value}".encode('ascii')
-
-    con.adapters.register_loader('uuid', GUIDLoader)
-    con.adapters.register_dumper(GUID, GUIDDumper)
 
 
 class LoSTServer(ABC):
@@ -57,8 +31,9 @@ class LoSTServer(ABC):
 
     Instantiate GeographicLoSTServer or CivicLostServer instead.
     '''
-    def __init__(self, server_id, table):
+    def __init__(self, server_id, db: ConnectionPool, table):
         self.server_id = server_id
+        self.db = db
         self.table = table
 
     @abstractmethod
@@ -88,7 +63,7 @@ def serviceBoundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
 
 class GeographicLoSTServer(LoSTServer):
     def findPoint(self, service, point: Point):
-        with pool.connection() as con:
+        with self.db.connection() as con:
             cur = con.execute('''
                 SELECT m.id, m.service, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
                 FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
@@ -179,14 +154,6 @@ def listServicesByLocation(req):
     raise BadRequest('<listServicesByLocation> not implemented')
 
 
-@app.route("/", methods=["GET"])
-def ping():
-    with pool.connection() as con:
-        res = con.execute("SELECT NOW()").fetchone()
-        assert res is not None
-        return f"Database says: {res[0]}"
-
-
 @app.route("/", methods=["POST"])
 def lost_request():
     if request.mimetype != MIME_TYPE:
@@ -226,7 +193,7 @@ def cli(ctx):
 
 
 @cli.command()
-@click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on.', show_default=True)
+@click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on', show_default=True)
 @click.option('--db-url', '-d', envvar='DB_URL', help='PostgreSQL database URL')
 @click.option('--max-con', type=int, default=16, envvar='MAX_CON', help='Maximum number of DB connections', show_default=True)
 @click.option('--min-con', type=int, default=1, envvar='MIN_CON', help='Minimum number of free DB connections', show_default=True)
@@ -234,31 +201,26 @@ def cli(ctx):
 @click.option('--civic-table', default='civic', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
 @click.option('--server-id', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
 def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
-    global pool, lost_server
+    global lost_server
 
     if db_url is None:
         print("Error: Please configure database via --db-url or environment variable DB_URL")
         sys.exit(1)
 
     try:
-        pool = ConnectionPool(db_url, min_size=min_con, max_size=max_con, num_workers=1, kwargs={
-            'autocommit': True
-        }, configure=adapt_for_guid)
-        atexit.register(lambda: pool.close())
-        # Wait for the connection pool to create its first connections. We want
-        # to fail early if the database cannot be connected for some reason.
-        pool.wait()
-    except Exception as e:
+        db.init(db_url, min_con=min_con, max_con=max_con)
+    except db.Error as e:
         print(f"Error while connecting to datababase '{db_url}': {e}")
         sys.exit(1)
 
     print("Instantiating a LoST server for the 'geodetic-2d' profile")
-    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, geo_table)
+    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, db.pool, geo_table)
 
     print("Instantiating a LoST server for the 'civic' profile")
-    lost_server['civic'] = CivicLoSTServer(server_id, civic_table)
+    lost_server['civic'] = CivicLoSTServer(server_id, db.pool, civic_table)
 
     app.config['server-id'] = server_id
+    app.config['db'] = db.pool
     app.run('0.0.0.0', port, debug=True, threaded=True)
 
 

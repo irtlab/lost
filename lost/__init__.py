@@ -13,18 +13,6 @@ NAMESPACE_MAP  = {
     'xml': XML_NAMESPACE
 }
 
-class LoSTResolver:
-    '''LoST resolver service implementation
-
-    This class implements a LoST resolver, i.e., a service used by applications
-    (clients) to submit queries. The resolver could be running on the same host
-    as the application, e.g., in the form of a background process that
-    communicates with the application via an inter-process communication channel
-    (DBus). It could be also provided as local network service, e.g., as part of
-    cloud services provided to applications running on the cloud infrastructure.
-    '''
-    pass
-
 
 class LoSTPublisher:
     '''LoST publisher implementation

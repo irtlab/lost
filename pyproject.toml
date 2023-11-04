@@ -42,8 +42,9 @@ dev = [
 "Bug Tracker" = "https://github.com/irtlab/lost/issues"
 
 [project.scripts]
-lost-server = "lost.server:cli"
-lost-seeker = "lost.seeker:cli"
+lost-server   = "lost.server:cli"
+lost-resolver = "lost.resolver:cli"
+lost-seeker   = "lost.seeker:cli"
 
 [tool.setuptools]
 packages = ["lost"]
