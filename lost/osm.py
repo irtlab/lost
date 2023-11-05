@@ -2,6 +2,7 @@ import sys
 import json
 import requests
 import osm2geojson
+from contextlib import suppress
 from os.path import join, realpath, dirname
 
 NOMINATIM_API = 'https://nominatim.openstreetmap.org'
@@ -91,9 +92,35 @@ def download_us_map(dir=realpath(join(dirname(__file__), '../data/us'))):
 
             jsn = search_overpass_by_id(id)
             gjsn = osm2geojson.json2geojson(jsn)
-            f.write(json.dumps(gjsn))
+            f.write(json.dumps(gjsn, indent=4))
 
             print("done.")
+
+
+def extract_boundary(obj: dict):
+    if obj['type'] != 'FeatureCollection':
+        raise Exception('FeatureCollection expected')
+    
+    for feature in obj['features']:
+        if feature['type'] != 'Feature': continue
+
+        props = feature['properties']
+        tags = props['tags']
+
+        if props['type'] != "relation" and props['type'] != "way":
+            continue
+
+        attrs = dict()
+        attrs['id'] = props['id']
+        attrs['timestamp'] = props['timestamp']
+
+        with suppress(KeyError): attrs['country'] = tags['ISO3166-1']
+        with suppress(KeyError): attrs['state'] = tags['ISO3166-2']
+        with suppress(KeyError): attrs['name'] = tags['name']
+
+        return feature['geometry'], attrs
+
+    raise Exception('No Feature with type relation found')
 
 
 if __name__ == '__main__':

@@ -16,13 +16,16 @@ $$;
 
 create table shape (
     id         serial                       primary key,
+    uri        text                         not null,
     geometries geometry(GeometryCollection) not null,
     created    timestamptz                  default now() not null,
     modified   timestamptz                  default now() not null,
     attrs      jsonb                        not null default '{}'::jsonb
 );
 
-create index shape_idx on shape using GIST(geometries);
+create        index shape_geom_idx  on shape using gist(geometries);
+create unique index shape_uri_idx   on shape using btree(uri);
+create        index shape_attrs_idx on shape using gin(attrs);
 
 create trigger update_shape_timestamp
     before update on shape
@@ -38,6 +41,8 @@ create table mapping (
     attrs    jsonb        not null default '{}'::jsonb
 );
 
+create index mapping_attrs_idx on shape using gin(attrs);
+
 create trigger update_mapping_timestamp
     before update on mapping
     for each row execute function public.update_timestamp();
@@ -45,8 +50,14 @@ create trigger update_mapping_timestamp
 
 revoke all on schema public from public;
 grant usage on schema public to public;
-create role "lost-server" with login;
-grant all privileges on database lost to "lost-server";
-grant all on all tables in schema public to "lost-server";
+
+create role "lost-server"   with login;
+create role "lost-resolver" with login;
+
+grant all on database lost                  to "lost-server";
+grant all on all tables    in schema public to "lost-server";
 grant all on all sequences in schema public to "lost-server";
 
+grant all on database lost                  to "lost-resolver";
+grant all on all tables    in schema public to "lost-resolver";
+grant all on all sequences in schema public to "lost-resolver";

@@ -26,7 +26,8 @@ dependencies = [
   "lxml",
   "pygml",
   "requests",
-  "osm2geojson"
+  "osm2geojson",
+  "tabulate"
 ]
 
 [project.optional-dependencies]

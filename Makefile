@@ -10,6 +10,11 @@ upload:
 
 .PHONY:
 docker:
-	docker build -t janakj.net/lost/db       -f Dockerfile.db     .
-	docker build -t janakj.net/lost/server   -f Dockerfile.server .
-	docker build -t janakj.net/lost/resolver -f Docker.resolver   .
+	docker build -t janakj.net/lost/db       -f Dockerfile.db       .
+	docker build -t janakj.net/lost          -f Dockerfile          .
+	docker build -t janakj.net/lost/server   -f Dockerfile.server   .
+	docker build -t janakj.net/lost/resolver -f Dockerfile.resolver .
+
+.PHONY:
+fetch:
+	
