@@ -1,7 +1,6 @@
 from __future__ import annotations
 import sys
 import click
-import psycopg
 import lxml.objectify
 import lxml.etree
 from psycopg_pool import ConnectionPool
@@ -10,11 +9,12 @@ from lxml.etree import Element, SubElement, XML
 from abc import ABC, abstractmethod
 from flask import Flask, request, Response, current_app
 from flask_cors import CORS
-from . import GML_NAMESPACE, LOST_NAMESPACE, XML_NAMESPACE, NAMESPACE_MAP, MIME_TYPE, SRS_URN
+from . import GML_NAMESPACE, LOST_NAMESPACE, XML_NAMESPACE, NAMESPACE_MAP, LOST_MIME_TYPE, SRS_URN
 from .errors import (LoSTError, BadRequest, NotFound, LocationProfileUnrecognized,
     NotImplemented, GeometryNotImplemented, SRSInvalid)
 from .geometry import Point
 from . import db
+from . import osm
 
 
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
@@ -37,8 +37,16 @@ class LoSTServer(ABC):
         self.table = table
 
     @abstractmethod
+    def check_authority(self, req: lxml.objectify.ObjectifiedElement):
+        raise NotImplemented('Checking authority area is not implemented')
+
+    @abstractmethod
     def findService(self, req: lxml.objectify.ObjectifiedElement):
         raise NotImplemented('<findService> not implemented')
+
+    @abstractmethod
+    def findIntersect(self, req: lxml.objectify.ObjectifiedElement):
+        raise NotImplemented('<findIntersect> not implemented')
 
 
 def serviceBoundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
@@ -62,14 +70,95 @@ def serviceBoundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
 
 
 class GeographicLoSTServer(LoSTServer):
-    def findPoint(self, service, point: Point):
+    def __init__(self, server_id, db: ConnectionPool, table, authoritative):
+        super().__init__(server_id, db, table)
+        self.server_id = server_id
+        self.db = db
+        self.table = table
+        self.authoritative = authoritative
+
+    def check_authority(self, req: lxml.objectify.ObjectifiedElement):
+        pass
+
+    # def check_authority(self, req: lxml.objectify.ObjectifiedElement):
+    #     with self.db.connection() as con:
+    #         cur = con.execute('''
+    #             SELECT ST_Intersects(geometries, ST_GeomFromText(%s, 4326)) FROM shape WHERE uri=%s
+    #         ''', (p, self.authoritative))
+    #         row = cur.fetchone()
+    #         if row is None:
+    #             raise ServerError('Server configuration error, authoritative URI not found')
+
+    #         if not row[0]:
+    #             raise NotAuthoritative('The point is outside the servers area of responsibility')
+
+    def findIntersect(self, req: lxml.objectify.ObjectifiedElement):
+        service = req.service.text
+        if service is not None:
+            service = service.strip()
+
+        geom = req.interest.getchildren()[0]
+
+        if geom.attrib.get('srsName') != SRS_URN:
+            raise SRSInvalid('Unsupported SRS name')
+
         with self.db.connection() as con:
             cur = con.execute('''
-                SELECT m.id, m.service, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
+                SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
+                FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
+                WHERE  ST_Intersects(s.geometries, ST_GeomFromGML(%s))
+                    and m.srv = %s''',
+                (lxml.etree.tostring(geom).decode('UTF-8'), service))
+
+            row = cur.fetchone()
+
+        if row is None:
+            raise NotFound('No suitable mapping found')
+
+        id, service, modified, attrs, shape = row
+
+        res = Element(f'{{{LOST_NAMESPACE}}}findIntersectResponse', nsmap=NAMESPACE_MAP)
+        mapping = SubElement(res, 'mapping',
+            source=self.server_id,
+            sourceId=str(id),
+            lastUpdated=modified.isoformat(),
+            expires=(datetime.now() + timedelta(days=1)).isoformat())
+
+        if 'displayName' in attrs:
+            dn = SubElement(mapping, 'displayName')
+            dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
+            dn.text = attrs['displayName']
+
+        SubElement(mapping, 'service').text = service
+        mapping.append(serviceBoundary(shape))
+
+        for uri in attrs.get('uri', []):
+            SubElement(mapping, 'uri').text = uri
+
+        return res
+
+    def findService(self, req: lxml.objectify.ObjectifiedElement):
+        service = req.service.text
+        if service is not None:
+            service = service.strip()
+
+        geom = req.location.getchildren()[0]
+
+        if geom.attrib.get('srsName') != SRS_URN:
+            raise SRSInvalid('Unsupported SRS name')
+
+        if geom.tag != f'{{{GML_NAMESPACE}}}Point':
+            raise GeometryNotImplemented(f'Unsupported geometry type {geom.tag}')
+
+        lat, lon = (geom.pos.text or '').strip().split()    
+        p = f'Point({lon} {lat})'
+        with self.db.connection() as con:
+            cur = con.execute('''
+                SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
                 FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
                 WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))
-                    and m.service = %s''',
-                (f'Point({point.lon} {point.lat})', service))
+                    and m.srv = %s''',
+                (p, service))
 
             row = cur.fetchone()
 
@@ -98,25 +187,6 @@ class GeographicLoSTServer(LoSTServer):
 
         return res
 
-    def findPolygon(self, service, polygon):
-        raise NotImplemented('')
-
-    def findService(self, req: lxml.objectify.ObjectifiedElement):
-        service = req.service.text
-        if service is not None:
-            service = service.strip()
-
-        geom = req.location.getchildren()[0]
-
-        if geom.attrib.get('srsName') != SRS_URN:
-            raise SRSInvalid('Unsupported SRS name')
-
-        if geom.tag == f'{{{GML_NAMESPACE}}}Point':
-            lat, lon = (geom.pos.text or '').strip().split()
-            return self.findPoint(service, Point(lon, lat))
-        else:
-            raise GeometryNotImplemented(f'Unsupported geometry type {geom.tag}')
-
 
 class CivicLoSTServer(LoSTServer):
     def findService(self, doc):
@@ -130,7 +200,7 @@ CORS(app)
 def xmlify(doc) -> Response:
     lxml.objectify.deannotate(doc, cleanup_namespaces=True, xsi_nil=True)
     return Response(lxml.etree.tostring(doc, encoding='UTF-8',
-        pretty_print=True, xml_declaration=True), mimetype=MIME_TYPE)
+        pretty_print=True, xml_declaration=True), mimetype=LOST_MIME_TYPE)
 
 
 def findService(req):
@@ -140,6 +210,15 @@ def findService(req):
         return server.findService(req)
     except KeyError as e:
         raise LocationProfileUnrecognized(f"Unsupported location profile '{profile}'") from e
+
+
+def findIntersect(req):
+    profile = req.interest.attrib['profile']
+    try:
+        server = lost_server[profile]
+        return server.findIntersect(req)
+    except KeyError as e:
+        raise LocationProfileUnrecognized(f"Unsupported interest profile '{profile}'") from e
 
 
 def getServiceBoundary(req):
@@ -156,7 +235,7 @@ def listServicesByLocation(req):
 
 @app.route("/", methods=["POST"])
 def lost_request():
-    if request.mimetype != MIME_TYPE:
+    if request.mimetype != LOST_MIME_TYPE:
         raise BadRequest('Unknown Content-Type')
 
     try:
@@ -169,6 +248,7 @@ def lost_request():
 
     type_ = req.tag[len(LOST_NAMESPACE) + 2:]
     if   type_ == 'findService':            res = findService(req)
+    elif type_ == 'findIntersect':          res = findIntersect(req)
     elif type_ == 'getServiceBoundary':     res = getServiceBoundary(req)
     elif type_ == 'listServices':           res = listServices(req)
     elif type_ == 'listServicesByLocation': res = listServicesByLocation(req)
@@ -182,30 +262,18 @@ def lost_error(exc: LoSTError):
     return xmlify(exc.to_xml(current_app.config.get('server-id', None)))
 
 
-@click.group(invoke_without_command=True)
+@click.group(help='LoST server', invoke_without_command=True)
 @click.pass_context
-def cli(ctx):
-    try:
-        if ctx.invoked_subcommand is None:
-            ctx.invoke(start)
-    except KeyboardInterrupt:
-        pass
-
-
-@cli.command()
-@click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on', show_default=True)
 @click.option('--db-url', '-d', envvar='DB_URL', help='PostgreSQL database URL')
 @click.option('--max-con', type=int, default=16, envvar='MAX_CON', help='Maximum number of DB connections', show_default=True)
 @click.option('--min-con', type=int, default=1, envvar='MIN_CON', help='Minimum number of free DB connections', show_default=True)
-@click.option('--geo-table', default='geo', envvar='GEO_TABLE', help='Name of geographic mapping table', show_default=True)
-@click.option('--civic-table', default='civic', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
-@click.option('--server-id', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
-def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
-    global lost_server
-
+def cli(ctx, db_url, min_con, max_con):
     if db_url is None:
         print("Error: Please configure database via --db-url or environment variable DB_URL")
         sys.exit(1)
+
+    ctx.ensure_object(dict)
+    ctx.obj['db_url'] = db_url
 
     try:
         db.init(db_url, min_con=min_con, max_con=max_con)
@@ -213,64 +281,30 @@ def start(port, db_url, max_con, min_con, geo_table, civic_table, server_id):
         print(f"Error while connecting to datababase '{db_url}': {e}")
         sys.exit(1)
 
-    print("Instantiating a LoST server for the 'geodetic-2d' profile")
-    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, db.pool, geo_table)
 
-    print("Instantiating a LoST server for the 'civic' profile")
-    lost_server['civic'] = CivicLoSTServer(server_id, db.pool, civic_table)
+osm.cli(cli)
+db.cli(cli)
+
+
+@cli.command(help='Start LoST server')
+@click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on', show_default=True)
+@click.option('--geo-table', '-g', default='mapping', envvar='GEO_TABLE', help='Name of geographic mapping table', show_default=True)
+@click.option('--civic-table', '-c', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
+@click.option('--server-id', '-i', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
+@click.option('--authoritative', '-a', envvar='AUTHORITATIVE', help='URI of the shape for which the server is authoritative')
+def start(port, geo_table, civic_table, server_id, authoritative):
+    global lost_server
+    
+    print("Instantiating a LoST server for the 'geodetic-2d' profile")
+    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, db.pool, geo_table, authoritative)
+
+    if civic_table is not None:
+        print("Instantiating a LoST server for the 'civic' profile")
+        lost_server['civic'] = CivicLoSTServer(server_id, db.pool, civic_table)
 
     app.config['server-id'] = server_id
     app.config['db'] = db.pool
-    app.run('0.0.0.0', port, debug=True, threaded=True)
-
-
-@cli.command('init-db')
-@click.option('--db-url', '-d', envvar='DB_URL', help='PostgreSQL database URL')
-@click.option('--drop', '-D', default=False, is_flag=True, help='Drop tables if they exist first')
-def init_db(db_url, drop):
-
-    if db_url is None:
-        print("Error: Please configure database via --db-url or environment variable DB_URL")
-        sys.exit(1)
-
-    with psycopg.connect(db_url, autocommit=True) as con:
-        if drop:
-            print("Dropping modification trigger on table mapping")
-            con.execute('DROP TRIGGER IF EXISTS update_modification_timestamp ON mapping')
-
-            print("Dropping table mappping")
-            con.execute('DROP TABLE IF EXISTS mapping')
-
-            print("Dropping function update_modification_timestamp()")
-            con.execute('DROP FUNCTION IF EXISTS update_modification_timestamp()')
-
-        print("Creating function update_modification_timestamp()")
-        con.execute('''
-            CREATE FUNCTION public.update_modification_timestamp() RETURNS trigger
-                LANGUAGE plpgsql
-                AS $$
-            begin
-                NEW.modified = now();
-                return NEW;
-            end;
-            $$;
-        ''')
-
-        print("Creating table mapping")
-        con.execute('''
-            CREATE TABLE mapping (
-                id       uuid         PRIMARY KEY DEFAULT uuid_generate_v4(),
-                service  text         NOT NULL,
-                shape    uuid         references shape(id) ON DELETE SET NULL,
-                created  timestamptz  DEFAULT now() NOT NULL,
-                modified timestamptz  DEFAULT now() NOT NULL,
-                attrs    jsonb        NOT NULL DEFAULT '{}'::jsonb
-            )''')
-
-        print("Creating modification trigger on table mapping")
-        con.execute('''
-            CREATE TRIGGER update_modification_timestamp BEFORE UPDATE ON mapping FOR EACH ROW EXECUTE FUNCTION public.update_modification_timestamp();
-        ''')
+    app.run('0.0.0.0', port, debug=True, threaded=True, use_reloader=True)
 
 
 if __name__ == '__main__':

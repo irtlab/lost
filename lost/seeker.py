@@ -43,15 +43,14 @@ def convert_from_geojson(data, id='geojson'):
     return tree
 
 
-
 @click.group()
-@click.option('--server-url', '-s', default='http://localhost:5000', help='LoST server URL', show_default=True)
+@click.option('--resolver-url', '-r', envvar='RESOLVER_URL', default='http://localhost:6000', help='LoST resolver URL', show_default=True)
 @click.pass_context
-def seeker(ctx, server_url):
-    ctx.obj = LoSTClient(server_url)
+def cli(ctx, resolver_url):
+    ctx.obj = LoSTClient(resolver_url)
 
 
-@seeker.command()
+@cli.command()
 @click.pass_obj
 @click.argument('service', type=str)
 @click.argument('location', type=str, nargs=-1)
@@ -90,26 +89,48 @@ def find_service(client: LoSTClient, service, location, recursive, reference):
     click.echo('\n'.join(uris))
 
 
-@seeker.command()
+@cli.command()
+@click.pass_obj
+@click.argument('service', type=str)
+@click.argument('location', type=str)
+@click.option('--recursive/--redirect', default=True, help='Configure recursive or redirect mode', show_default=True)
+@click.option('--reference/--value', default=False, help='Receive service boundary by reference or value', show_default=True)
+def find_intersect(client: LoSTClient, service, location, recursive, reference):
+    with open(location, 'rb') as f:
+        text = f.read()
+
+    try:
+        tree = lxml.objectify.fromstring(text)
+    except lxml.etree.XMLSyntaxError as e:
+        try:
+            input = json.loads(text)
+        except json.JSONDecodeError as e:
+            raise click.BadArgumentUsage("Unknown file format (tried XML and JSON)") from e
+        else:
+            tree = convert_from_geojson(input)
+
+    uris = client.findIntersect(service, tree, recursive=recursive, reference=reference)
+    click.echo('\n'.join(uris))
+
+
+@cli.command()
 @click.pass_obj
 def get_service_boundary(client: LoSTClient):
     pass
 
 
-@seeker.command()
+@cli.command()
 @click.option('--by-location', '-l', is_flag=True, default=False)
 @click.pass_obj
 def list_services(client: LoSTClient, by_location):
     pass
 
 
-def cli():
+if __name__ == '__main__':
     try:
-        seeker()
+        cli()
     except Exception as e:
         click.echo(f'Error: {e}')
         sys.exit(1)
-
-
-if __name__ == '__main__':
-    cli()
+    except KeyboardInterrupt:
+        pass

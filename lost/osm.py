@@ -4,7 +4,10 @@ import json
 import requests
 import osm2geojson
 from contextlib import suppress
+from psycopg.types.json import Jsonb
 from os.path import join, realpath, dirname
+from . import db
+
 
 NOMINATIM_API  = 'https://nominatim.openstreetmap.org'
 OVERPASS_API   = 'https://overpass-api.de/api/interpreter'
@@ -151,7 +154,7 @@ def extract_boundary(obj: dict):
     raise Exception('No Feature with type relation found')
 
 
-def fetch_from_osm(data, dir):
+def fetch_world(data, dir):
     os.makedirs(dir, exist_ok=True)
     for name, node in data.items():
         if isinstance(node, tuple) or isinstance(node, list):
@@ -175,8 +178,54 @@ def fetch_from_osm(data, dir):
         print(f"{path}")
 
         if children:
-            fetch_from_osm(children, join(dir, name))
+            fetch_world(children, join(dir, name))
+
+
+def cli(parent):
+    import click
+    from urllib.parse import urlparse
+
+    @parent.group(help='Commands for working with OpenStreetMap')
+    def osm():
+        pass
+
+    @osm.command(help='Fetch geographic object from OpenStreetMap')
+    @click.argument('url', type=str)
+    @click.option('--name', '-n', help='Override name attribute')
+    def fetch(url, name):
+        parsed = urlparse(url, allow_fragments=False)
+        if parsed.hostname is None or not parsed.hostname.endswith('openstreetmap.org'):
+            click.echo(f'Unsupported URL {url}', err=True)
+            sys.exit(1)
+
+        print(f"Downloading {url}...", end='')
+        sys.stdout.flush()
+        jsn = search_overpass_by_id(parsed.path[1:])
+        gjsn = osm2geojson.json2geojson(jsn)
+
+        geometry, attrs = extract_boundary(gjsn)
+        print("done.")
+
+        if name is not None:
+            attrs['name'] = name
+
+        with db.pool.connection() as con:
+            con.execute('''
+                INSERT INTO shape
+                    (uri, geometries, modified, attrs)
+                VALUES (
+                    %s,
+                    ST_ForceCollection(ST_GeomFromGeoJSON(%s)),
+                    %s,
+                    %s)
+                ON CONFLICT(uri)
+                DO
+                    UPDATE SET
+                        geometries=EXCLUDED.geometries,
+                        modified=EXCLUDED.modified,
+                        attrs=EXCLUDED.attrs
+            ''', (url, Jsonb(geometry), attrs['timestamp'], Jsonb(attrs)))
 
 
 if __name__ == '__main__':
-    fetch_from_osm(WORLD, join(DATA_DIR, 'world'))
+    fetch_world(WORLD, join(DATA_DIR, 'world'))

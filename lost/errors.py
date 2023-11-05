@@ -131,6 +131,15 @@ class ServerTimeout(LoSTError):
     type = 'serverTimeout'
 
 
+class NotAuthoritative(LoSTError):
+    '''The LoST server is not authoritative for the request
+
+    The LoST server received a request that falls outside its area of
+    responsibility and refuses to process it.
+    '''
+    type = 'notAuthoritative'
+
+
 class NotImplemented(LoSTError):
     '''Feature is not implemented'''
     type = 'notImplemented'

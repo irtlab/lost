@@ -2,7 +2,7 @@ import lxml.objectify
 import lxml.etree
 from urllib import request as http
 from lxml.etree import Element, SubElement
-from . import MIME_TYPE, LOST_NAMESPACE, NAMESPACE_MAP, GML_NAMESPACE, SRS_URN
+from . import LOST_MIME_TYPE, LOST_NAMESPACE, NAMESPACE_MAP, GML_NAMESPACE, SRS_URN
 from .geometry import Point
 from .errors import LoSTError, ServerError
 
@@ -13,11 +13,11 @@ class LoSTClient:
     The LoST responder is an entity that receives queries forwarded to it by
     LoST servers. The responder resolves those queries to local resources.
     '''
-    def __init__(self, server_url):
-        self.server_url = server_url
+    def __init__(self, resolver_url):
+        self.resolver_url = resolver_url
 
-    def POST(self, data=None, mime_type=MIME_TYPE):
-        req = http.Request(self.server_url, method='POST')
+    def POST(self, data=None, mime_type=LOST_MIME_TYPE):
+        req = http.Request(self.resolver_url, method='POST')
         req.add_header('Content-Type', mime_type)
 
         with http.urlopen(req, data=data) as res:
@@ -27,7 +27,7 @@ class LoSTClient:
 
             headers = res.info()
             ctype = headers.get('Content-Type', None).split(';')[0].lower()
-            if ctype != MIME_TYPE:
+            if ctype != LOST_MIME_TYPE:
                 raise ServerError(f'Unsupported Content-Type: {ctype}')
 
             return res.read()
@@ -49,6 +49,24 @@ class LoSTClient:
 
         return doc
 
+    def find(self, service: str, location: lxml.etree._Element, reqTag, resTag, recursive=True, reference=False):
+        doc = Element(f'{{{LOST_NAMESPACE}}}{reqTag}',
+            nsmap=NAMESPACE_MAP,
+            serviceBoundary="reference" if reference else "value",
+            recursive="true" if recursive else "false")
+
+        loc = SubElement(doc, 'location', profile="geodetic-2d")
+        loc.insert(0, location)
+        SubElement(doc, 'service').text = service
+
+        res = self.submit(doc)
+
+        type_ = res.tag[len(LOST_NAMESPACE) + 2:]
+        if type_ != resTag:
+            raise ServerError(f'Unexpected response type "{type_}"')
+
+        return [uri.text for uri in res.mapping.uri]
+
     def findService(self, service: str, location: lxml.etree._Element, recursive=True, reference=False):
         doc = Element(f'{{{LOST_NAMESPACE}}}findService',
             nsmap=NAMESPACE_MAP,
@@ -66,3 +84,22 @@ class LoSTClient:
             raise ServerError(f'Unexpected response type "{type_}"')
 
         return [uri.text for uri in res.mapping.uri]
+
+    def findIntersect(self, service: str, obj: lxml.etree._Element, recursive=True, reference=False):
+        doc = Element(f'{{{LOST_NAMESPACE}}}findIntersect',
+            nsmap=NAMESPACE_MAP,
+            serviceBoundary="reference" if reference else "value",
+            recursive="true" if recursive else "false")
+
+        interest = SubElement(doc, 'interest', profile="geodetic-2d")
+        interest.insert(0, obj)
+        SubElement(doc, 'service').text = service
+
+        res = self.submit(doc)
+
+        type_ = res.tag[len(LOST_NAMESPACE) + 2:]
+        if type_ != 'findIntersectResponse':
+            raise ServerError(f'Unexpected response type "{type_}"')
+
+        return [uri.text for uri in res.mapping.uri]
+        

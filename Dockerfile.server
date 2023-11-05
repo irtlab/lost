@@ -1,8 +1,10 @@
 FROM janakj.net/lost
 
+COPY ./scripts/start-server.sh /
+
 ENV PORT 5000
 
 ENV DB_URL "user=lost-server host=/run/postgresql dbname=lost"
 ENV SERVER_ID "lost-server"
 
-CMD exec lost-server start
+CMD /start-server.sh
