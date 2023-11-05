@@ -53,6 +53,7 @@ US_MAP = {
     'South Carolina'       : 'relation/224040',
     'South Dakota'         : 'relation/161652',
     'Tennessee'            : 'relation/161838',
+    'Texas'                : 'relation/114690',
     'Utah'                 : 'relation/161993',
     'Vermont'              : 'relation/60759',
     'Virginia'             : 'relation/224042',
