@@ -1,0 +1,2 @@
+FROM janakj.net/lost/db
+COPY data/sql/01-us.sql /docker-entrypoint-initdb.d/
