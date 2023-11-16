@@ -37,7 +37,6 @@ def main(geojson_folder, output_directory):
 
     with open(output_file_path, 'w') as json_file:
         json.dump(all_file_data, json_file, indent=4)
-
     click.echo(f"JSON file created with mapping data: {output_file_path}")
     
 if __name__ == "__main__":
