@@ -372,7 +372,5 @@ def load(folder, mapping_file):
                     #Insert the geometry
                     insert_geometry_into_db(geometry_json, metadata, url)
                     
-        
-
 if __name__ == '__main__':
     cli()
