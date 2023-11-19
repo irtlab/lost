@@ -29,7 +29,7 @@ def main(geojson_folder, output_directory):
                     url = f"http://lost-server-{os.path.splitext(filename)[0]}:5000"
                 
                 #Build the dictionary with file path as the key and the associated url as the value
-                all_file_data[file_path] = url
+                all_file_data[file_path] = { 'uri': url }
 
 
     #write the file the the output directory specified by the user
