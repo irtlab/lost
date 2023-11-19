@@ -1,0 +1,239 @@
+{
+    "data/world/germany.geojson": {
+        "uri": "http://lost-server-germany:5000"
+    },
+    "data/world/czechia.geojson": {
+        "uri": "http://lost-server-czechia:5000"
+    },
+    "data/world/romania.geojson": {
+        "uri": "http://lost-server-romania:5000"
+    },
+    "data/world/estonia.geojson": {
+        "uri": "http://lost-server-estonia:5000"
+    },
+    "data/world/slovakia.geojson": {
+        "uri": "http://lost-server-slovakia:5000"
+    },
+    "data/world/netherlands.geojson": {
+        "uri": "http://lost-server-netherlands:5000"
+    },
+    "data/world/croatia.geojson": {
+        "uri": "http://lost-server-croatia:5000"
+    },
+    "data/world/luxembourg.geojson": {
+        "uri": "http://lost-server-luxembourg:5000"
+    },
+    "data/world/hungary.geojson": {
+        "uri": "http://lost-server-hungary:5000"
+    },
+    "data/world/latvia.geojson": {
+        "uri": "http://lost-server-latvia:5000"
+    },
+    "data/world/poland.geojson": {
+        "uri": "http://lost-server-poland:5000"
+    },
+    "data/world/greece.geojson": {
+        "uri": "http://lost-server-greece:5000"
+    },
+    "data/world/lithuania.geojson": {
+        "uri": "http://lost-server-lithuania:5000"
+    },
+    "data/world/portugal.geojson": {
+        "uri": "http://lost-server-portugal:5000"
+    },
+    "data/world/sweden.geojson": {
+        "uri": "http://lost-server-sweden:5000"
+    },
+    "data/world/spain.geojson": {
+        "uri": "http://lost-server-spain:5000"
+    },
+    "data/world/denmark.geojson": {
+        "uri": "http://lost-server-denmark:5000"
+    },
+    "data/world/bulgaria.geojson": {
+        "uri": "http://lost-server-bulgaria:5000"
+    },
+    "data/world/austria.geojson": {
+        "uri": "http://lost-server-austria:5000"
+    },
+    "data/world/italy.geojson": {
+        "uri": "http://lost-server-italy:5000"
+    },
+    "data/world/ireland.geojson": {
+        "uri": "http://lost-server-ireland:5000"
+    },
+    "data/world/finland.geojson": {
+        "uri": "http://lost-server-finland:5000"
+    },
+    "data/world/united-states.geojson": {
+        "uri": "http://lost-server-united-states:5000"
+    },
+    "data/world/cyprus.geojson": {
+        "uri": "http://lost-server-cyprus:5000"
+    },
+    "data/world/belgium.geojson": {
+        "uri": "http://lost-server-belgium:5000"
+    },
+    "data/world/france.geojson": {
+        "uri": "http://lost-server-france:5000"
+    },
+    "data/world/slovenia.geojson": {
+        "uri": "http://lost-server-slovenia:5000"
+    },
+    "data/world/malta.geojson": {
+        "uri": "http://lost-server-malta:5000"
+    },
+    "data/world/united-states/nebraska.geojson": {
+        "uri": "http://lost-server-us-ne:5000"
+    },
+    "data/world/united-states/new-hampshire.geojson": {
+        "uri": "http://lost-server-us-nh:5000"
+    },
+    "data/world/united-states/delaware.geojson": {
+        "uri": "http://lost-server-us-de:5000"
+    },
+    "data/world/united-states/texas.geojson": {
+        "uri": "http://lost-server-us-tx:5000"
+    },
+    "data/world/united-states/maryland.geojson": {
+        "uri": "http://lost-server-us-md:5000"
+    },
+    "data/world/united-states/georgia.geojson": {
+        "uri": "http://lost-server-us-ga:5000"
+    },
+    "data/world/united-states/mississippi.geojson": {
+        "uri": "http://lost-server-us-ms:5000"
+    },
+    "data/world/united-states/alabama.geojson": {
+        "uri": "http://lost-server-us-al:5000"
+    },
+    "data/world/united-states/iowa.geojson": {
+        "uri": "http://lost-server-us-ia:5000"
+    },
+    "data/world/united-states/colorado.geojson": {
+        "uri": "http://lost-server-us-co:5000"
+    },
+    "data/world/united-states/wisconsin.geojson": {
+        "uri": "http://lost-server-us-wi:5000"
+    },
+    "data/world/united-states/minnesota.geojson": {
+        "uri": "http://lost-server-us-mn:5000"
+    },
+    "data/world/united-states/hawaii.geojson": {
+        "uri": "http://lost-server-us-hi:5000"
+    },
+    "data/world/united-states/west-virginia.geojson": {
+        "uri": "http://lost-server-us-wv:5000"
+    },
+    "data/world/united-states/ohio.geojson": {
+        "uri": "http://lost-server-us-oh:5000"
+    },
+    "data/world/united-states/tennessee.geojson": {
+        "uri": "http://lost-server-us-tn:5000"
+    },
+    "data/world/united-states/pennsylvania.geojson": {
+        "uri": "http://lost-server-us-pa:5000"
+    },
+    "data/world/united-states/montana.geojson": {
+        "uri": "http://lost-server-us-mt:5000"
+    },
+    "data/world/united-states/south-dakota.geojson": {
+        "uri": "http://lost-server-us-sd:5000"
+    },
+    "data/world/united-states/utah.geojson": {
+        "uri": "http://lost-server-us-ut:5000"
+    },
+    "data/world/united-states/oklahoma.geojson": {
+        "uri": "http://lost-server-us-ok:5000"
+    },
+    "data/world/united-states/south-carolina.geojson": {
+        "uri": "http://lost-server-us-sc:5000"
+    },
+    "data/world/united-states/arkansas.geojson": {
+        "uri": "http://lost-server-us-ar:5000"
+    },
+    "data/world/united-states/illinois.geojson": {
+        "uri": "http://lost-server-us-il:5000"
+    },
+    "data/world/united-states/kentucky.geojson": {
+        "uri": "http://lost-server-us-ky:5000"
+    },
+    "data/world/united-states/north-dakota.geojson": {
+        "uri": "http://lost-server-us-nd:5000"
+    },
+    "data/world/united-states/rhode-island.geojson": {
+        "uri": "http://lost-server-us-ri:5000"
+    },
+    "data/world/united-states/florida.geojson": {
+        "uri": "http://lost-server-us-fl:5000"
+    },
+    "data/world/united-states/new-mexico.geojson": {
+        "uri": "http://lost-server-us-nm:5000"
+    },
+    "data/world/united-states/arizona.geojson": {
+        "uri": "http://lost-server-us-az:5000"
+    },
+    "data/world/united-states/district-of-columbia.geojson": {
+        "uri": "http://lost-server-us-dc:5000"
+    },
+    "data/world/united-states/alaska.geojson": {
+        "uri": "http://lost-server-us-ak:5000"
+    },
+    "data/world/united-states/new-jersey.geojson": {
+        "uri": "http://lost-server-us-nj:5000"
+    },
+    "data/world/united-states/michigan.geojson": {
+        "uri": "http://lost-server-us-mi:5000"
+    },
+    "data/world/united-states/maine.geojson": {
+        "uri": "http://lost-server-us-me:5000"
+    },
+    "data/world/united-states/virginia.geojson": {
+        "uri": "http://lost-server-us-va:5000"
+    },
+    "data/world/united-states/louisiana.geojson": {
+        "uri": "http://lost-server-us-la:5000"
+    },
+    "data/world/united-states/kansas.geojson": {
+        "uri": "http://lost-server-us-ks:5000"
+    },
+    "data/world/united-states/massachusetts.geojson": {
+        "uri": "http://lost-server-us-ma:5000"
+    },
+    "data/world/united-states/idaho.geojson": {
+        "uri": "http://lost-server-us-id:5000"
+    },
+    "data/world/united-states/connecticut.geojson": {
+        "uri": "http://lost-server-us-ct:5000"
+    },
+    "data/world/united-states/missouri.geojson": {
+        "uri": "http://lost-server-us-mo:5000"
+    },
+    "data/world/united-states/vermont.geojson": {
+        "uri": "http://lost-server-us-vt:5000"
+    },
+    "data/world/united-states/new-york.geojson": {
+        "uri": "http://lost-server-us-ny:5000"
+    },
+    "data/world/united-states/nevada.geojson": {
+        "uri": "http://lost-server-us-nv:5000"
+    },
+    "data/world/united-states/california.geojson": {
+        "uri": "http://lost-server-us-ca:5000"
+    },
+    "data/world/united-states/wyoming.geojson": {
+        "uri": "http://lost-server-us-wy:5000"
+    },
+    "data/world/united-states/north-carolina.geojson": {
+        "uri": "http://lost-server-us-nc:5000"
+    },
+    "data/world/united-states/oregon.geojson": {
+        "uri": "http://lost-server-us-or:5000"
+    },
+    "data/world/united-states/washington.geojson": {
+        "uri": "http://lost-server-us-wa:5000"
+    },
+    "data/world/united-states/indiana.geojson": {
+        "uri": "http://lost-server-us-in:5000"
+    }
+}

@@ -1,10 +1,12 @@
 from __future__ import annotations
 import sys
+import os
 import click
 import lxml.objectify
 import lxml.etree
 from psycopg_pool import ConnectionPool
 from datetime import datetime, timedelta
+from psycopg.types.json import Jsonb
 from lxml.etree import Element, SubElement, XML
 from abc import ABC, abstractmethod
 from flask import Flask, request, Response, current_app
@@ -14,10 +16,10 @@ from .errors import (LoSTError, BadRequest, NotFound, LocationProfileUnrecognize
     NotImplemented, GeometryNotImplemented, SRSInvalid)
 from .geometry import Point
 from . import db
+from .osm import extract_boundary
 from . import osm
+from .guid import GUID
 import json
-import os
-import random
 
 
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
@@ -196,36 +198,6 @@ class CivicLoSTServer(LoSTServer):
         pass
 
 
-def insert_geometry_into_db(geometry_json, metadata, url):
-        with db.pool.connection() as con:
-            attrs_json = json.dumps(metadata)
-
-            # Check if the geometry is already present in the database
-            cur = con.execute(
-                "SELECT id FROM shape WHERE ST_Equals(geometries, ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326))",
-                (geometry_json,)
-            )
-            existing_geom = cur.fetchone()
-
-            #If the geometry is not already in the database, insert that geometry
-            if not existing_geom:
-                uri = random.randint(1, 999999)
-                
-                #Insert the geometry and metadata into the shape table
-                cur = con.execute(
-                    "INSERT INTO shape (uri, geometries, modified, attrs) VALUES (%s, ST_ForceCollection(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)), CURRENT_TIMESTAMP, %s) RETURNING id",
-                    (uri, geometry_json, attrs_json)
-                )
-                
-                #Insert the associated values into the mapping table
-                last_row_id = cur.fetchone()[0]
-                    #Ensure that all rows in mapping have an associated value in the shape table
-                cur = con.execute("DELETE FROM mapping WHERE shape IS NULL")
-                cur = con.execute(
-                    "INSERT INTO mapping (shape, srv, modified, attrs) VALUES (%s, %s, CURRENT_TIMESTAMP, %s)",
-                    (last_row_id, 'lost', json.dumps(url))
-                )
-
 app = Flask(__name__)
 CORS(app)
 
@@ -340,37 +312,63 @@ def start(port, geo_table, civic_table, server_id, authoritative):
     app.run('0.0.0.0', port, debug=True, threaded=True, use_reloader=True)
 
 
-@cli.command(help='Insert geometries into databases for the LoST server. <folder> <mapping_file>. <folder> a directory full of GeoJSON files. <mapping_file> is a JSON file with server name: server url')
+def update_db(geometry, attrs, mapping_attrs):
+        with db.pool.connection() as con:
+            # Check if the geometry is already present in the database
+            cur = con.execute('''
+                SELECT id FROM shape
+                WHERE ST_Equals(geometries, ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326))
+            ''', (Jsonb(geometry),))
+            previous = cur.fetchone()
+
+            if previous is None:
+                # If the geometry is not already in the database, insert that geometry
+                uri = attrs.get('uri', str(GUID()))
+                cur = con.execute('''
+                    INSERT INTO shape (uri, geometries, modified, attrs)
+                    VALUES (%s, ST_ForceCollection(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)), %s, %s)
+                    RETURNING id
+                ''', (uri, Jsonb(geometry), attrs['timestamp'], Jsonb(attrs)))
+                
+                shape_id = cur.fetchone()[0]
+            else:
+                shape_id = previous[0]
+
+            if mapping_attrs is not None:
+                con.execute('''
+                    DELETE FROM mapping
+                    WHERE srv='lost' and (shape IS NULL or SHAPE=%s)
+                ''', (shape_id,))
+
+                cur = con.execute('''
+                    INSERT INTO mapping (shape, srv, attrs)
+                    VALUES (%s, %s, %s)
+                ''', (shape_id, 'lost', Jsonb(mapping_attrs)))
+
+
+@cli.command(help='Load GeoJSON geometries from <folder> into the database. Add attributes from <attr_file>.')
 @click.argument('folder')
-@click.argument('mapping_file')
-def load(folder, mapping_file):
-    
-    #Open the mapping file as a json object
-    with open(mapping_file, 'r') as mapping_file:
-        mapping_file_load = json.load(mapping_file)
+@click.argument('attr_file')
+def load(folder, attr_file):
+    # Open the attribute file as a JSON object
+    with open(attr_file, 'r') as f:
+        mapping = json.load(f)
 
-    #For each geojson file in the folder, insert the geometry into the database
+    # For each GeoJSON file in the folder, insert the geometry into the database
     for filename in os.listdir(folder):
-        if filename.endswith('.geojson'):
-            with open(os.path.join(folder, filename), 'r') as file:
-                geojson_file = json.load(file)
+        if not filename.endswith('.geojson'): continue
 
-            #Parse the geojson file for the necessary data
-            for feature in geojson_file['features']:
-                if feature['properties'].get('type') == 'relation':
-                    geometry_json = json.dumps(feature['geometry'])
-                    properties = feature['properties']
-                    metadata = {
-                        'id': properties.get('id'),
-                        'timestamp': properties.get('timestamp'),
-                        'version': properties.get('version'),
-                        'name': properties['tags'].get('name'),
-                        'iso3166_2': properties['tags'].get('ISO3166-2'),
-                    }
-                    url = mapping_file_load[os.path.join(folder, filename)]
-                    
-                    #Insert the geometry
-                    insert_geometry_into_db(geometry_json, metadata, url)
+        click.echo(f'Loading {filename}...', nl=False)
+        try:
+            with open(os.path.join(folder, filename), 'r') as file:
+                geojson = json.load(file)
+
+            geometry, attrs = extract_boundary(geojson)
+            mapping_attrs = mapping.get(os.path.join(folder, filename), {})
+            update_db(geometry, attrs, mapping_attrs)
+        finally:
+            click.echo('done.')
+
                     
 if __name__ == '__main__':
     cli()

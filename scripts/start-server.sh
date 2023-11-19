@@ -7,4 +7,8 @@ if [ -n "$AUTHORITATIVE" ] ; then
     }
 fi
 
+if [ -n "$LOAD" ] ; then
+    lost-server load $LOAD data/mapping.json
+fi
+
 exec lost-server start $@
