@@ -46,6 +46,7 @@ dev = [
 lost-server   = "lost.server:cli"
 lost-resolver = "lost.resolver:cli"
 lost-seeker   = "lost.seeker:cli"
+lost-publisher   = "lost.publisher:cli"
 
 [tool.setuptools]
 packages = ["lost"]
