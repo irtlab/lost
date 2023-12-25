@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" id="lost">
+    <head>
+        <title>LoST Resolver</title>
+        <meta charset="utf-8">
+        <meta name="description" content="LoST Resolver">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="icon" href="/favicon.ico">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            #lost-loading {
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                font-size: 1rem;
+                font-weight: 400;
+                line-height: 1.5;
+                font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+            }
+            #lost-loading .window {
+                margin: auto;
+                background-color: white;
+                padding: 1rem;
+                width: 300px;
+                border-radius: 0.3rem;
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                box-sizing: border-box;
+                background-clip: padding-box;
+                text-align: center;
+            }
+            #lost-loading .spinner {
+                color: #007bff !important;
+                text-align: center !important;
+                display: inline-block;
+                width: 2rem;
+                height: 2rem;
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                vertical-align: text-bottom;
+                background-color: currentColor;
+                border-radius: 50%;
+                opacity: 0;
+                -webkit-animation: .75s linear infinite lost-loading-spinner;
+                animation: .75s linear infinite lost-loading-spinner;
+            }
+            @keyframes lost-loading-spinner {
+                0% {
+                    transform: scale(0);
+                }
+                50% {
+                    opacity: 1;
+                    -webkit-transform: none;
+                    transform: none;
+                }
+            }
+        </style>
+        <script>
+            // If the browser fails to load a JavaScript bundle for some reason,
+            // DOMContentLoaded will fire, but the JavaScript application will
+            // not set window.lostRunning variable. Install a timer started by
+            // DOMContentLoaded that checks whether the variable has been set a
+            // few seconds after the event and if not, assume the application
+            // failed to load and show a loading error indicator.
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    if (window.lostRunning) return;
+                    document.getElementById("lost-loading").style.display = 'none';
+                    document.getElementById("lost-loading-error").style.display = '';
+                }, 1000);
+            });
+        </script>
+    </head>
+    <body>
+        <noscript>
+            <h1 style="text-align: center">
+                This application needs JavaScript.
+            </h1>
+        </noscript>
+        <div id="lost-container">
+            <div id="lost-loading" style="display: none">
+                <div class="window">
+                    <div class="spinner"></div>
+                    <div>
+                        Loading LoST Resolver
+                    </div>
+                </div>
+            </div>
+            <div id="lost-loading-error" style="display: none; text-align: center">
+                <h1>Loading Error</h1>
+                <p>
+                    Please reload the page to try again.
+                </p>
+            </div>
+        </div>
+        <script>
+            document.getElementById("lost-loading").style.display = ''
+        </script>
+    </body>
+</html>

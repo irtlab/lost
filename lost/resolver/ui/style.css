@@ -1,0 +1,32 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Centering of a block within a fixed size container based on CSS3
+ * transforms. For this to work, the element being centered must be within a
+ * positioned ancestor, e.g., relative or absolute.
+ */
+.lost-horizontally-centered {
+    /* If we are centering a div, make sure it is wide enough just to wrap its
+       content and not stretched across the entire page. */
+    float: left;
+
+    position: relative !important;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+}
+
+.lost-vertically-centered {
+    position: relative !important;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+}
+
+.dragging, .dragging * {
+    cursor: 'dragging !important';
+}

@@ -110,7 +110,7 @@ class GeographicLoSTServer(LoSTServer):
         with self.db.connection() as con:
             cur = con.execute('''
                 SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
-                FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
+                FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
                 WHERE  ST_Intersects(s.geometries, ST_GeomFromGML(%s))
                     and m.srv = %s''',
                 (lxml.etree.tostring(geom).decode('UTF-8'), service))
@@ -160,7 +160,7 @@ class GeographicLoSTServer(LoSTServer):
         with self.db.connection() as con:
             cur = con.execute('''
                 SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
-                FROM   mapping AS m JOIN shape AS s ON m.shape=s.id
+                FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
                 WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))
                     and m.srv = %s''',
                 (p, service))
@@ -336,12 +336,12 @@ def update_db(geometry, attrs, mapping_attrs):
 
             if mapping_attrs is not None:
                 con.execute('''
-                    DELETE FROM mapping
+                    DELETE FROM server.mapping
                     WHERE srv='lost' and (shape IS NULL or SHAPE=%s)
                 ''', (shape_id,))
 
                 cur = con.execute('''
-                    INSERT INTO mapping (shape, srv, attrs)
+                    INSERT INTO server.mapping (shape, srv, attrs)
                     VALUES (%s, %s, %s)
                 ''', (shape_id, 'lost', Jsonb(mapping_attrs)))
 

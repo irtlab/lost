@@ -23,11 +23,14 @@ dependencies = [
   "psycopg[binary]",
   "psycopg[pool]",
   "flask-cors",
+  "flask-marshmallow",
+  "pyproj",
   "lxml",
   "pygml",
   "requests",
   "osm2geojson",
-  "tabulate"
+  "tabulate",
+  "scikit-image"
 ]
 
 [project.optional-dependencies]
@@ -44,7 +47,7 @@ dev = [
 
 [project.scripts]
 lost-server   = "lost.server:cli"
-lost-resolver = "lost.resolver:cli"
+lost-resolver = "lost.resolver.cli:main"
 lost-seeker   = "lost.seeker:cli"
 lost-publisher   = "lost.publisher:cli"
 

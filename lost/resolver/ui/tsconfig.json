@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "outDir": "public",
+        "strict": true,
+        "target": "ES5",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "jsx": "react",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "downlevelIteration": true
+    },
+    "exclude": [
+        "public",
+        "node_modules"
+    ]
+}

@@ -1,6 +1,5 @@
 import atexit
 import psycopg
-import sys
 from .guid import GUID
 from psycopg.adapt import Loader, Dumper
 from psycopg_pool import ConnectionPool
