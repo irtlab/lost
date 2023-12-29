@@ -1,13 +1,21 @@
 import React from 'react';
+import * as ReactDOM from 'react-dom/client';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.css';
-import ReactDOM from 'react-dom';
+import "leaflet/dist/leaflet.css";
 import { DndProvider } from 'react-dnd';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { BrowserRouter as Router } from "react-router-dom";
-import NavBar from "./navbar";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { Provider as StoreProvider } from 'react-redux';
 
-import './style.css';
+import NavBar from "./navbar";
+import Alerts from "./alert";
+import Images from "./image";
+import { BusyCurtain } from './busy';
+import { defaultMapCenter, defaultMapZoom } from '../config';
+import { MapView, ImportView } from './map';
+import '../style.css';
+import { store } from '../state/store';
 
 
 // The following global variables are generated for us by the build system (Webpack)
@@ -19,22 +27,52 @@ declare global {
     const npm_package_version : string | undefined;
 }
 
-function App() {
-    return (        
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+
+function Layout() {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', minHeight: '100vh' }}>
             <NavBar/>
+            <Alerts/>
+            <div style={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}>
+                <Outlet/>
+            </div>
+            <BusyCurtain/>
         </div>
     );
 }
 
+const router = createBrowserRouter([{
+    path: "/",
+    element: <Layout/>,
+    children: [{
+        path: '/',
+        element: <MapView style={{ flexGrow: 1 }} center={defaultMapCenter} zoom={defaultMapZoom}/>
+    }, {
+        path: '/import/*',
+        element: <ImportView center={defaultMapCenter} zoom={defaultMapZoom}/>
+    }, {
+        path: '/images/*',
+        element: <Images/>
+    }, {
+        path: '/features/*',
+        element: <p>Features</p>
+    }]
+}], {
+    future: {
+        v7_relativeSplatPath: true
+    }
+}); 
+
 
 function Main() {
     return (
-        <Router>
-            <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
-                <App/>
-            </DndProvider>
-        </Router>
+        <React.StrictMode>
+            <StoreProvider store={store}>
+                <DndProvider backend={TouchBackend} options={{ enableMouseEvents: true }}>
+                    <RouterProvider router={router}/>
+                </DndProvider>
+            </StoreProvider>
+        </React.StrictMode>
     );
 }
 
@@ -61,6 +99,7 @@ function initDebugging(prefix: string) {
     };
 }
 
+
 // Initialize various subsystems and render the top-level React component or an
 // error page if initialization fails.
 let el;
@@ -74,4 +113,4 @@ try {
 
 // Let the script embedded in the DOM know that we're taking over
 (window as any).lostRunning = true;
-ReactDOM.render(el, document.getElementById('lost-container'));
+ReactDOM.createRoot(document.getElementById("lost-container")!).render(el);

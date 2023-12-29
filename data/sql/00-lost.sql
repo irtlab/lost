@@ -5,21 +5,19 @@ create extension plpython3u;
 create extension postgis;
 create extension "uuid-ossp";
 
-create function update_timestamp() returns trigger
-    language plpgsql
-    as $$
+create function update_timestamp() returns trigger language plpgsql as $$
 begin
-    NEW.modified = current_timestamp;
+    NEW.updated = current_timestamp;
     return NEW;
 end;
 $$;
 
 create table shape (
-    id         serial                              primary key,
+    id         uuid                                primary key default uuid_generate_v4(),
     uri        text                                not null,
     geometries public.geometry(GeometryCollection) not null,
     created    timestamptz                         not null default current_timestamp,
-    modified   timestamptz                         not null default current_timestamp,
+    updated    timestamptz                         not null default current_timestamp,
     attrs      jsonb                               not null default '{}'::jsonb
 );
 
@@ -35,12 +33,12 @@ create schema server;
 set schema 'server';
 
 create table mapping (
-    id       serial       primary key,
-    shape    integer      references public.shape(id) on delete set null,
-    srv      text         not null,
-    created  timestamptz  not null default current_timestamp,
-    modified timestamptz  not null default current_timestamp,
-    attrs    jsonb        not null default '{}'::jsonb
+    id      serial       primary key,
+    shape   uuid         references public.shape(id) on delete set null,
+    srv     text         not null,
+    created timestamptz  not null default current_timestamp,
+    updated timestamptz  not null default current_timestamp,
+    attrs   jsonb        not null default '{}'::jsonb
 );
 
 create index mapping_attrs_idx on mapping using gin(attrs);
@@ -49,9 +47,9 @@ create trigger update_mapping_timestamp
     before update on mapping
     for each row execute function public.update_timestamp();
 
+
 create schema resolver;
 set schema 'resolver';
-
 
 create type feature_t as enum (
     'Area',
@@ -63,15 +61,14 @@ create type feature_t as enum (
     'Point'
 );
 
-
 create table feature (
-    id             serial      primary key,
+    id             uuid        primary key default public.uuid_generate_v4(),
     type           feature_t,
     name           text        not null,
-    parent         integer     references feature(id),
+    parent         uuid        references feature(id),
     vertical_range text,
     indoor         bool        default 't',
-    shape          integer     references public.shape(id) on delete set null,
+    shape          uuid        references public.shape(id) on delete set null,
     control_points text[],
     created        timestamptz not null default current_timestamp,
     image          text,
@@ -79,35 +76,35 @@ create table feature (
     attrs          jsonb       not null default '{}'::jsonb
 );
 
-
 create table control_point (
-    id          serial primary key,
+    id          uuid                   primary key default public.uuid_generate_v4(),
     coordinates public.geometry(point)
 );
 
-
 create table coordinate_transform (
-    id            serial primary key,
-    control_links jsonb  not null
+    id            uuid  primary key default public.uuid_generate_v4(),
+    control_links jsonb not null
 );
-
 
 create table raster_image (
-    id             serial       primary key,
-    name           text         not null,
-    data           bytea        not null,
-    uploaded       timestamptz  not null default current_timestamp,
-    last_modified  timestamptz,
-    width          integer      not null,
-    height         integer      not null,
-    size           integer      not null,
-    file_name      text         not null
+    id          uuid        primary key default public.uuid_generate_v4(),
+    name        text,
+    file_name   text        not null,
+    width       integer     check (width > 0) not null,
+    height      integer     check (height > 0) not null,
+    size        integer     check (size > 0) not null,
+    storage_ref text        not null,
+    created     timestamptz not null default current_timestamp,
+    updated     timestamptz not null default current_timestamp
 );
 
+create trigger update_raster_image_timestamp
+    before update on raster_image
+    for each row execute function public.update_timestamp();
 
 -- Given a feature id, lookup the feature's shape by recursively traversing the
 -- tree of features up towards the root.
-create or replace function find_shape(feature_id integer) returns integer as $$
+create or replace function find_shape(feature_id uuid) returns uuid as $$
 begin
     return (
         with recursive parent as (
@@ -131,7 +128,6 @@ begin
 end;
 $$ language plpgsql;
 
-
 -- Compute the location uncertainty polygon for the given center point and
 -- radius in meters. If radius is not null, a polygon approximating the
 -- uncertainty circle with the given center and radius will be returned. If
@@ -151,7 +147,6 @@ begin
 end;
 $$ language plpgsql;
 
-
 create function projective_transform(matrix double precision[][], coordinates double precision[]) returns double precision[] as $$
 declare
     d double precision;
@@ -164,7 +159,6 @@ begin
     ];
 end;
 $$ language plpgsql;
-
 
 create role "lost-server" with login;
 grant all on schema server to "lost-server";

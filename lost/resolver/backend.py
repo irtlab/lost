@@ -10,14 +10,22 @@ import random
 import osm2geojson
 import urllib.request
 import flask
-
-from flask_marshmallow    import Marshmallow
-from werkzeug.exceptions  import BadRequest, HTTPException
-from io                   import BytesIO
-from flask                import abort, jsonify, request, current_app, send_from_directory, Blueprint
-from base64               import b64encode
-from pyproj               import Transformer
-from skimage.transform    import (
+import json
+import psycopg
+from contextlib          import suppress
+from PIL                 import Image 
+from flask_cors          import CORS
+from datetime            import datetime
+from flask_marshmallow   import Marshmallow
+from flask.json.provider import JSONProvider
+from werkzeug.exceptions import BadRequest
+from werkzeug.routing    import BaseConverter
+from werkzeug.utils      import secure_filename
+from io                  import BytesIO
+from flask               import abort, jsonify, request, current_app, Blueprint, send_from_directory, url_for
+from base64              import b64encode
+from pyproj              import Transformer
+from skimage.transform   import (
     estimate_transform,
     matrix_transform,
     SimilarityTransform,
@@ -28,16 +36,60 @@ from skimage.transform    import (
 from marshmallow import Schema, fields as fld, ValidationError, validate
 
 from ..guid import GUID
-from .. import db as db2
-from . import app
+from .. import db
 
-app.config['PROPAGATE_EXCEPTIONS'] = False
 
-api = Blueprint('api', __name__, url_prefix='/api')
+class GUIDFlaskParameter(BaseConverter):
+    '''GUID converter for Flask URL parameters.
+
+    This class reconstructs a GUID object from a Flask URL parameters.
+    '''
+    def to_python(self, value):
+        try:
+            return GUID(value)
+        except:
+            abort(400)
+
+    def to_url(self, value):
+        return str(value)
+
+
+class CustomJSONProvider(JSONProvider):
+    '''A custom JSON encoder for Flask applications.
+
+    Replaces the default JSON encoder in the Flask application. Adds a couple of
+    modifications to format datetime objects as ISO strings and to properly
+    convert custom GUID objects to a string representation.
+    '''
+    class Encoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, datetime): return obj.isoformat()
+            if isinstance(obj, GUID): return str(obj)
+            return super().default(obj)
+
+    def dumps(self, obj, **kwargs):
+        return json.dumps(obj, **kwargs, cls=self.Encoder)
+
+    def loads(self, obj, **kwargs):
+        return json.loads(obj, **kwargs)
+
+
+class GUIDField(fld.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        return str(value)
+
+    def _deserialize(self, value, attr, data, **kwargs):
+        try:
+            return GUID(value)
+        except Exception as error:
+            raise ValidationError('Invalid GUID format') from error
+
+
+api = Blueprint('api', __name__)
 ma = Marshmallow(api)
+CORS(api)
 
 
-@api.errorhandler(HTTPException)
 def handle_error(e):
     body = {
         'code'        : e.code,
@@ -62,7 +114,6 @@ def handle_error(e):
     return response
 
 
-@api.errorhandler(ValidationError)
 def failed_validation(e):
     exc = BadRequest('Invalid or missing JSON body')
     exc.original_exception = e
@@ -267,122 +318,190 @@ def reproject():
 
 
 class RasterImageSchema(Schema):
-    id           = fld.Integer()
-    name         = fld.Str(required=True, validate=validate.Length(min=1))
-    url          = fld.Str(required=True, validate=validate.URL())
-    width        = fld.Integer(required=True, validate=validate.Range(min=0))
-    height       = fld.Integer(required=True, validate=validate.Range(min=0))
-    size         = fld.Integer(required=True, validate=validate.Range(min=0))
-    uploaded     = fld.DateTime()
-    fileName     = fld.Str(required=True, validate=validate.Length(min=1))
-    lastModified = fld.DateTime()
-    storageRef   = fld.Str(required=True, validate=validate.Length(min=1))
+    id         = GUIDField(required=True)
+    name       = fld.Str(required=True, allow_none=True, validate=validate.Length(min=1))
+    fileName   = fld.Str(required=True, validate=validate.Length(min=1))
+    width      = fld.Integer(required=True, validate=validate.Range(min=0))
+    height     = fld.Integer(required=True, validate=validate.Range(min=0))
+    size       = fld.Integer(required=True, validate=validate.Range(min=0))
+    storageRef = fld.Str(required=True, validate=validate.Length(min=1))
+    src        = fld.Str(dump_only=True)
+    created    = fld.DateTime(required=True)
+    updated    = fld.DateTime(required=True)
 
 
 def _select_images(db, id=None):
     return db.execute(f'''
         select
-            id, name, url, width, height, size, uploaded,
-            file_name     as "fileName",
-            last_modified as "lastModified",
-            storage_ref   as "storageRef"
-        from raster_image
+            id, name, file_name as "fileName",
+            storage_ref as "storageRef",
+            width, height, size,
+            created, updated
+        from resolver.raster_image
         {id and 'where id=%s' or ''}
-    ''', (id,))
+    ''', id and (id,))
+
+
+def _add_src(res):
+    res['src'] = url_for('images.serve_image', path=res['storageRef'])
+    return res
 
 
 @api.route('/image', methods=['GET'])
 def get_all_images():
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = _select_images(con)
-        return jsonify(cur.fetchall())
+        return jsonify([_add_src(res) for res in cur.fetchall()])
 
 
-@api.route('/image', methods=['PUT'])
-def replace_all_images():
-    data = RasterImageSchema(many=True).load(request.get_json())
-    recs = []
+@api.route('/image', methods=['POST'])
+def create_image():
+    image_dir = current_app.config['image_dir']
+    files = request.files.getlist('file')
 
-    with db2.pool.connection() as con:
-        cur = con.execute('delete from raster_image')
-        if len(data):
-            recs = execute_values(cur, '''
-                insert into raster_image
-                    (id, name, file_name, height, last_modified,
-                    size, storage_ref, uploaded, url, width)
-                values %s
-                returning
-                    id, name, url, width, height, size, uploaded,
-                    file_name     as "fileName",
-                    last_modified as "lastModified",
-                    storage_ref   as "storageRef"
-            ''', data, template='''
-                (%(id)s, %(name)s, %(fileName)s, %(height)s, %(lastModified)s,
-                %(size)s, %(storageRef)s, %(uploaded)s, %(url)s, %(width)s)
-            ''', fetch=True)
-    return jsonify(recs)
+    with db.pool.connection() as con:
+        with con.cursor() as cur:
+            query = '''
+                insert into resolver.raster_image (
+                    file_name, storage_ref,
+                    width, height, size
+                ) values (
+                    %s, %s, %s, %s, %s
+                ) returning
+                    id, file_name as "fileName", storage_ref as "storageRef",
+                    width, height, size, created, updated
+            '''
+
+            data = []
+            for file in files:
+                if file.filename == '':
+                    abort(400, "Please submit a file")
+
+                storage_ref = f'{GUID()}_{secure_filename(file.filename)}'
+                path = os.path.join(image_dir, storage_ref)
+
+                file.save(path)
+                size = os.stat(path).st_size
+                img = Image.open(path)
+
+                data.append((file.filename, storage_ref, img.width, img.height, size))
+
+            cur.executemany(query, data, returning=True)
+
+            results = [ cur.fetchone() ]
+            while cur.nextset() is True:
+                results.append(cur.fetchone())
+
+            return jsonify([_add_src(res) for res in results])
 
 
 @api.route('/image', methods=['DELETE'])
-def delete_all_images(id):
-    with db2.pool.connection() as con:
-        con.execute('delete from raster_image')
+def delete_all_images():
+    image_dir = current_app.config['image_dir']
+
+    with db.pool.connection() as con:
+        cur = _select_images(con)
+
+        for img in cur.fetchall():
+            with suppress(FileNotFoundError):
+                os.remove(os.path.join(image_dir, img['storageRef']))
+
+        con.execute('delete from resolver.raster_image')
+
     return '', 204
 
 
-@api.route('/image/<int:id>', methods=['GET'])
-def get_image(id):
-    with db2.pool.connection() as con:
-        data = _select_images(con, id).fetchone()
-        return jsonify(data) if data else abort(404)
-
-
-@api.route('/image/<int:id>', methods=['PUT'])
-def update_image(id):
-    data = RasterImageSchema().load(request.get_json())
-    if data['id'] != id:
-        abort(400, description='Invalid object id')
-
-    with db2.pool.connection() as con:
-        cur = con.execute('''
-            insert into raster_image (
-                id, name, file_name, height, last_modified,
-                size, storage_ref, uploaded, url, width
-            ) values (
-                %(id)s, %(name)s, %(fileName)s, %(height)s, %(lastModified)s,
-                %(size)s, %(storageRef)s, %(uploaded)s, %(url)s, %(width)s
-            ) on conflict (id) do update set
-                name          = %(name)s,
-                file_name     = %(fileName)s,
-                height        = %(height)s,
-                last_modified = %(lastModified)s,
-                size          = %(size)s,
-                storage_ref   = %(storageRef)s,
-                uploaded      = %(uploaded)s,
-                url           = %(url)s,
-                width         = %(width)s
-            returning
-                id, name, url, width, height, size, uploaded,
-                file_name     as "fileName",
-                last_modified as "lastModified",
-                storage_ref   as "storageRef"
-        ''', data)
-        data = cur.fetchone()
-        return jsonify(data) if data else abort(404)
-
-
-@api.route('/image/<int:id>', methods=['DELETE'])
+@api.route('/image/<guid:id>', methods=['DELETE'])
 def delete_image(id):
-    with db2.pool.connect() as con:
+    image_dir = current_app.config['image_dir']
+
+    with db.pool.connection() as con:
+        cur = _select_images(con, id)
+
+        img = cur.fetchone()
+        with suppress(FileNotFoundError):
+            os.remove(os.path.join(image_dir, img['storageRef']))
+
         con.execute('''
-            delete from raster_image
+            delete from resolver.raster_image
             where id=%s
         ''', (id,))
         return '', 204
 
 
+@api.route('/image/<guid:id>', methods=['GET'])
+def get_image(id):
+    with db.pool.connection() as con:
+        data = _select_images(con, id).fetchone()
+        return jsonify(_add_src(data)) if data else abort(404)
+
+
+@api.route('/image/<guid:id>', methods=['PUT'])
+def update_image(id):
+    data = RasterImageSchema().load(request.get_json())
+    if data['id'] != id:
+        abort(400, description='Invalid object id')
+
+    with db.pool.connection() as con:
+        cur = con.execute('''
+            update resolver.raster_image set
+                name        = %(name)s,
+                file_name   = %(fileName)s,
+                width       = %(width)s,
+                height      = %(height)s,
+                size        = %(size)s,
+                storage_ref = %(storageRef)s,
+                created     = %(created)s,
+                updated     = %(updated)s
+            where
+                id=%(id)s
+            returning
+                id, name, file_name as "fileName",
+                storage_ref as "storageRef",
+                width, height, size,
+                created, updated
+        ''', data)
+        data = cur.fetchone()
+        return jsonify(_add_src(data)) if data else abort(404)
+
+
+@api.route('/image', methods=['PUT'])
+def update_images():
+    images = RasterImageSchema(many=True).load(request.get_json())
+    recs = []
+
+    with db.pool.connection() as con:
+        with con.cursor() as cur:
+            query = '''
+                update resolver.raster_image set
+                    name        = %(name)s,
+                    file_name   = %(fileName)s,
+                    width       = %(width)s,
+                    height      = %(height)s,
+                    size        = %(size)s,
+                    storage_ref = %(storageRef)s,
+                    created     = %(created)s,
+                    updated     = %(updated)s
+                where
+                    id=%(id)s
+                returning
+                    id, name, file_name as "fileName",
+                    storage_ref as "storageRef",
+                    width, height, size,
+                    created, updated
+            '''
+
+            cur.executemany(query, images, returning=True)
+
+            results = [ cur.fetchone() ]
+            while cur.nextset() is True:
+                results.append(cur.fetchone())
+
+            return jsonify([_add_src(res) for res in results])
+
+
 class ControlPointSchema(Schema):
-    id          = fld.Integer()
+    id          = GUIDField()
     type        = fld.Str(required=True, validate=validate.Equal("Point"))
     coordinates = fld.List(fld.Number, required=True, validate=validate.Length(min=2, max=3))
     crs         = fld.Dict()
@@ -402,7 +521,7 @@ def _select_control_points(db, id=None):
 
 @api.route('/control_point', methods=['GET'])
 def get_all_control_points():
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         return jsonify(_select_control_points(con).fetchall())
 
 
@@ -460,7 +579,7 @@ def replace_all_control_points():
     # the rest of the point so that it can be passed to ST_GeomFromGeoJSON.
     data = [parse_geojson(d) for d in data]
 
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from control_point')
         if len(data):
             recs = execute_values(con, '''
@@ -480,13 +599,13 @@ def replace_all_control_points():
 
 @api.route('/control_point', methods=['DELETE'])
 def delete_all_control_points(id):
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from control_point')
     return '', 204
 
 
 class ShapeSchema(Schema):
-    id         = fld.Integer()
+    id         = GUIDField()
     type       = fld.Str(required=True, validate=validate.Equal("GeometryCollection"))
     geometries = fld.List(fld.Dict, required=True)
 
@@ -504,14 +623,14 @@ def _select_shapes(db, id=None):
 
 @api.route('/shape', methods=['GET'])
 def get_all_shapes():
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = _select_shapes(con)
         return jsonify(cur.fetchall())
 
 
 @api.route('/shape/<int:id>', methods=['GET'])
 def get_shape(id):
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = _select_shapes(con, id)
         data = cur.fetchone()
         return jsonify(data) if data else abort(404)
@@ -525,7 +644,7 @@ def replace_all_shapes():
         "geometries" : d['geometries']
     })) for d in ShapeSchema(many=True).load(request.get_json())]
 
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from shape')
         if len(data):
             recs = execute_values(con, '''
@@ -545,13 +664,13 @@ def replace_all_shapes():
 
 @api.route('/shape', methods=['DELETE'])
 def delete_all_shapes(id):
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from shape')
     return '', 204
 
 
 class DeviceSchema(Schema):
-    id           = fld.Integer()
+    id           = GUIDField()
     name         = fld.Str(required=True, validate=validate.Length(min=1))
     center       = fld.List(fld.Number)
     created      = fld.DateTime()
@@ -568,64 +687,17 @@ def _select_devices(cursor, id=None):
     """, (id,))
 
 
-
-@api.route('/device', methods=['GET'])
-def get_all_devices():
-    with db2.pool.connection() as con:
-        cur = _select_devices(con)
-        return jsonify(cur.fetchall())
-
-
-@api.route('/device', methods=['PUT'])
-def replace_all_devices():
-    recs = []
-
-    data = [(
-        d.get('id'),
-        d.get('name'),
-        d.get('center') and f"point({d['center'][0]} {d['center'][1]})" or None,
-        d.get('radius')
-    ) for d in DeviceSchema(many=True).load(request.get_json())]
-
-    with db2.pool.connection() as con:
-        con.execute('delete from device')
-        if len(data):
-            recs = execute_values(con, '''
-                insert into device
-                    (id, name, center, radius)
-                values %s
-                returning
-                    id,
-                    name,
-                    ST_AsGeoJSON(center)::json->'coordinates' as center,
-                    radius
-            ''', data, template='''(
-                    %s,
-                    %s,
-                    ST_GeomFromText(%s, 4326),
-                    %s
-            )''', fetch=True)
-    return jsonify(recs)
-
-
-@api.route('/device', methods=['DELETE'])
-def delete_all_devices(id):
-    with db2.pool.connection() as con:
-        con.execute('delete from device')
-    return '', 204
-
-
 class FeatureSchema(Schema):
-    id            = fld.Integer()
+    id            = GUIDField()
     type          = fld.Str(required=True)
     name          = fld.Str(required=True, validate=validate.Length(min=1))
-    parent        = fld.Integer(required=True, allow_none=True)
+    parent        = GUIDField(required=True, allow_none=True)
     verticalRange = fld.Str(allow_none=True)
     indoor        = fld.Boolean(required=True)
-    shape         = fld.Integer(required=True, allow_none=True)
+    shape         = GUIDField(required=True, allow_none=True)
     controlPoints = fld.List(fld.Str, required=True, allow_none=True)
     created       = fld.DateTime()
-    image         = fld.Integer(required=True, allow_none=True)
+    image         = GUIDField(required=True, allow_none=True)
     transform     = fld.Str(required=True, allow_none=True)
     attrs         = fld.Dict(fld.Str, required=True)
 
@@ -652,7 +724,7 @@ def _select_features(db, id=None):
 
 @api.route('/feature', methods=['GET'])
 def get_all_features():
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = _select_features(con)
         return jsonify(cur.fetchall())
 
@@ -662,7 +734,7 @@ def replace_all_features():
     recs = []
     data = FeatureSchema(many=True).load(request.get_json())
 
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from feature')
         if len(data):
             recs = execute_values(con, '''
@@ -687,13 +759,13 @@ def replace_all_features():
 
 @api.route('/feature', methods=['DELETE'])
 def delete_all_features(id):
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from feature')
     return '', 204
 
 
 class CoordinateTransformSchema(Schema):
-    id            = fld.Integer()
+    id            = GUIDField()
     controlLinks  = fld.Dict(fld.Str, required=True)
     toWGS84       = fld.Str(allow_none=True)
     fromWGS84     = fld.Str(allow_none=True)
@@ -711,7 +783,7 @@ def _select_transforms(db, id=None):
 
 @api.route('/coordinate_transform', methods=['GET'])
 def get_all_transforms():
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = _select_transforms(con)
         return jsonify(cur.fetchall())
 
@@ -721,7 +793,7 @@ def replace_all_transforms():
     data = CoordinateTransformSchema(many=True).load(request.get_json())
     recs = []
 
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from coordinate_transform')
         if len(data):
             recs = execute_values(con, '''
@@ -740,34 +812,9 @@ def replace_all_transforms():
 
 @api.route('/coordinate_transform', methods=['DELETE'])
 def delete_all_transforms(id):
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         con.execute('delete from coordinate_transform')
     return '', 204
-
-
-@api.route('/match/<int:id>', methods=['GET'])
-def match_devices(id):
-    with db2.pool.connection() as con:
-        cur = con.execute('''
-            select distinct(device.id)
-            from
-                device,
-                feature left join shape on find_shape(%s)=shape.id
-            where
-                    st_srid(device.center) = 4326
-                and st_contains(
-                        shape.geometries,
-                        uncertainty_circle(device.center, device.radius))
-        ''', (id,))
-        return jsonify([v['id'] for v in cur.fetchall()])
-
-
-@api.route('/sql', methods=['POST'])
-def sql_api():
-    query = request.get_json()
-    with db2.pool.connection() as con:
-        cur = con.execute(query)
-        return jsonify(cur.fetchall())
 
 
 @api.route("/bbox", methods=['GET'])
@@ -778,7 +825,7 @@ def get_bbox():
     implementation would be to not explicitly store and maintain max/min lat/lon
     and extract from polygon (performance tradeoff)
     '''
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         cur = con.execute('''
         select min(minLon), min(minLat), max(maxLon), max(maxLat)
         from feature
@@ -804,7 +851,7 @@ def contains():
     except Exception as e:
         abort(400, description='invalid value for lng/lat')
 
-    with db2.pool.connection() as con:
+    with db.pool.connection() as con:
         # ST_GeomFromEWKT converts input lon/lat into postgres geometry point
         # 'geojson_polygon' refers to the 'geojson_polygon' column, where the polygon features are stored, '::geometry' suffix is needed for postgis to interpret serialized data as a geometry
         # ST_Within(point,polygon)='t' returns True if point is within the polygon, False otherwise
@@ -1008,7 +1055,7 @@ def load_OSM():
             cur.close()
             engine.commit()
 
-        except (Exception, psycopg2.DatabaseError) as error:
+        except (Exception, psycopg.DatabaseError) as error:
             print(error)
             engine.close()
             raise(error)
@@ -1181,17 +1228,16 @@ def create_feature():
         cur.close()
         engine.commit()
         engine.close()
-    except (Exception, psycopg2.DatabaseError) as error:
+    except (Exception, psycopg.DatabaseError) as error:
         engine.close()
         raise(error)
 
     return 'created feature with uuid %s' % feature_id
 
 
-dir = os.path.dirname(__file__)
-frontend_dir = f'{dir}/ui/public'
+images = Blueprint('images', __name__)
+CORS(images)
 
-@app.route('/')
-@app.route('/<path:path>')
-def serve_frontend(path='index.html'):
-    return send_from_directory(frontend_dir, path)
+@images.route('/<path:path>')
+def serve_image(path):
+    return send_from_directory(current_app.config['image_dir'], path)

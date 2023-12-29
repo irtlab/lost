@@ -1,7 +1,5 @@
-from flask import Flask
-from flask_cors import CORS
+from flask        import Flask
 from psycopg_pool import ConnectionPool
-from datetime import datetime
 
 
 class LoSTResolver:
@@ -21,5 +19,32 @@ class LoSTResolver:
 
 resolver: LoSTResolver = None
 
-app = Flask(__name__)
-CORS(app)
+
+def create_app(frontend, backend, image_dir):
+    app = Flask(__name__)
+
+    if frontend:
+        from . import frontend
+        app.register_blueprint(frontend.js)
+
+    if backend:
+        from . import backend
+        from werkzeug.exceptions import HTTPException
+        from marshmallow import ValidationError
+
+        # There appears to be no way to set URL parameter converters and custom
+        # JSON providers on a blueprint.
+        app.url_map.converters['guid'] = backend.GUIDFlaskParameter
+        app.json = backend.CustomJSONProvider(app)
+
+        # Custom error handlers only seem to work correctly in all cases when
+        # they are set on the main application, not on the blueprint.
+        app.register_error_handler(HTTPException, backend.handle_error)
+        app.register_error_handler(ValidationError, backend.failed_validation)
+
+        app.config['image_dir'] = image_dir
+        app.register_blueprint(backend.api, url_prefix='/api')
+
+        app.register_blueprint(backend.images, url_prefix='/image')
+
+    return app

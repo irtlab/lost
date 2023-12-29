@@ -20,10 +20,10 @@ function buildDate() {
 
 
 module.exports = {
-    entry: './main.tsx',
+    entry: './jsx/main.tsx',
     output: {
         path: path.resolve(__dirname, 'public'),
-        filename: '[name].[contenthash].js',
+        filename: '[name].js',
         publicPath: '/',
     },
     optimization: {

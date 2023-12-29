@@ -1,9 +1,10 @@
 import atexit
 import psycopg
 from .guid import GUID
+from contextlib    import contextmanager
 from psycopg.adapt import Loader, Dumper
-from psycopg_pool import ConnectionPool
-
+from psycopg_pool  import ConnectionPool
+from psycopg.rows  import dict_row
 
 # Create a pool of persistent PostgreSQL database connections. When we are done
 # with a PostgreSQL connection, we simply return it to the pool without closing
@@ -34,7 +35,8 @@ def init(db_url: str, min_con=1, max_con=16):
         raise Exception('Database is already initialized')
 
     pool = ConnectionPool(db_url, min_size=min_con, max_size=max_con, num_workers=1, kwargs={
-        'autocommit': True
+        'autocommit'  : True,
+        'row_factory' : dict_row
     }, configure=adapt_for_guid)
     atexit.register(lambda: pool.close())
     # Wait for the connection pool to create its first connections. We want

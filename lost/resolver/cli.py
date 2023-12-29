@@ -2,7 +2,7 @@ import sys
 import click
 from .. import db
 from .. import osm
-from . import LoSTResolver, app, resolver
+from . import LoSTResolver, create_app, resolver
 
 
 @click.group(help='LoST resolver')
@@ -30,15 +30,24 @@ db.cli(main)
 @main.command(help='Start LoST resolver')
 @click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on', show_default=True)
 @click.option('--root-server', '-r', type=str, envvar='ROOT_SERVER', help='URL of the root server')
-@click.option('--ui', '-u', is_flag=True, help='Start the web UI')
-def start(port, root_server, ui):
+@click.option('--frontend', '-f', is_flag=True, help='Server web user interface')
+@click.option('--backend', '-b', is_flag=True, help='Serve backend API')
+@click.option('--image_dir', '-i', type=click.Path(exists=True, file_okay=False, dir_okay=True), help='Directory to store images')
+def start(port, root_server, frontend, backend, image_dir):
     global resolver
 
     resolver = LoSTResolver(db.pool, root_server)
 
-    if ui:
-        click.echo('Starting web UI')
-        from . import ui
+    if frontend:
+        click.echo('Serving JavaScript frontend')
 
+    if backend:
+        if image_dir is None:
+            click.echo("Error: Please configure image directory", err=True)
+            sys.exit(1)
+
+        click.echo('Serving backend APIs')
+
+    app = create_app(frontend=frontend, backend=backend, image_dir=image_dir)
     app.config['db'] = db.pool
-    app.run('0.0.0.0', port, debug=True, threaded=True)
+    app.run('0.0.0.0', port, debug=True, threaded=True, use_debugger=False)

@@ -1,6 +1,7 @@
 html, body {
     margin: 0;
     padding: 0;
+    position: relative;
 }
 
 /* Centering of a block within a fixed size container based on CSS3
@@ -29,4 +30,18 @@ html, body {
 
 .dragging, .dragging * {
     cursor: 'dragging !important';
+}
+
+.alert-wrapper {
+    position: absolute;
+    left: 50%;
+    z-index: 1024;
+    max-width: 75%;
+    max-height: 100%;
+    padding-top: 1rem;
+}
+
+.alert {
+    position: relative;
+    left: -50%;
 }
