@@ -282,7 +282,7 @@ def cli(ctx, db_url, min_con, max_con):
 
     try:
         db.init(db_url, min_con=min_con, max_con=max_con)
-    except db.Error as e:
+    except Exception as e:
         print(f"Error while connecting to datababase '{db_url}': {e}")
         sys.exit(1)
 
