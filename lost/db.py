@@ -1,10 +1,9 @@
 import atexit
 import psycopg
 from .guid import GUID
-from contextlib    import contextmanager
 from psycopg.adapt import Loader, Dumper
 from psycopg_pool  import ConnectionPool
-from psycopg.rows  import dict_row
+from psycopg.rows  import namedtuple_row
 
 # Create a pool of persistent PostgreSQL database connections. When we are done
 # with a PostgreSQL connection, we simply return it to the pool without closing
@@ -36,7 +35,7 @@ def init(db_url: str, min_con=1, max_con=16):
 
     pool = ConnectionPool(db_url, min_size=min_con, max_size=max_con, num_workers=1, kwargs={
         'autocommit'  : True,
-        'row_factory' : dict_row
+        'row_factory' : namedtuple_row
     }, configure=adapt_for_guid)
     atexit.register(lambda: pool.close())
     # Wait for the connection pool to create its first connections. We want
@@ -66,15 +65,15 @@ def cli(parent):
         with pool.connection() as con:
             with con.cursor() as cur:
                 cur.execute('''
-                    SELECT uri, created, modified, attrs
+                    SELECT uri, created, updated, attrs
                     FROM shape
                 ''')
 
                 data = []
                 for row in cur.fetchall():
-                    r = [row[3]['name'], row[0], row[1].strftime('%c'), row[2].strftime('%c')]
+                    r = [row.attrs['name'], row.uri, row.created.strftime('%c'), row.updated.strftime('%c')]
                     if attrs:
-                        r.append(row[3])
+                        r.append(row.attrs)
                     data.append(r)
 
                 click.echo(tabulate(data, tablefmt="psql", headers=headers))

@@ -29,7 +29,7 @@ class LoSTPublisher:
                 # If the geometry is not already in the database, insert that geometry
                 uri = attrs.get('uri', str(GUID()))
                 cur = con.execute('''
-                    INSERT INTO shape (uri, geometries, modified, attrs)
+                    INSERT INTO shape (uri, geometries, updated, attrs)
                     VALUES (%s, ST_ForceCollection(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)), %s, %s)
                     RETURNING id
                 ''', (uri, Jsonb(geometry), attrs['timestamp'], Jsonb(attrs)))
@@ -37,7 +37,7 @@ class LoSTPublisher:
                 shape_id = cur.fetchone()[0]
                 self.shape_ids.append(shape_id)
             else:
-                shape_id = previous[0]
+                shape_id = previous.id
 
 
             return shape_id

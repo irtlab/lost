@@ -109,7 +109,7 @@ class GeographicLoSTServer(LoSTServer):
 
         with self.db.connection() as con:
             cur = con.execute('''
-                SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
+                SELECT m.id, m.srv, m.updated, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
                 FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
                 WHERE  ST_Intersects(s.geometries, ST_GeomFromGML(%s))
                     and m.srv = %s''',
@@ -120,13 +120,13 @@ class GeographicLoSTServer(LoSTServer):
         if row is None:
             raise NotFound('No suitable mapping found')
 
-        id, service, modified, attrs, shape = row
+        id, service, updated, attrs, shape = row
 
         res = Element(f'{{{LOST_NAMESPACE}}}findIntersectResponse', nsmap=NAMESPACE_MAP)
         mapping = SubElement(res, 'mapping',
             source=self.server_id,
             sourceId=str(id),
-            lastUpdated=modified.isoformat(),
+            lastUpdated=updated.isoformat(),
             expires=(datetime.now() + timedelta(days=1)).isoformat())
 
         if 'displayName' in attrs:
@@ -159,7 +159,7 @@ class GeographicLoSTServer(LoSTServer):
         p = f'Point({lon} {lat})'
         with self.db.connection() as con:
             cur = con.execute('''
-                SELECT m.id, m.srv, m.modified, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
+                SELECT m.id, m.srv, m.updated, m.attrs, ST_AsGML(3, s.geometries, 5, 17) AS shape
                 FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
                 WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))
                     and m.srv = %s''',
@@ -170,13 +170,13 @@ class GeographicLoSTServer(LoSTServer):
         if row is None:
             raise NotFound('No suitable mapping found')
 
-        id, service, modified, attrs, shape = row
+        id, service, updated, attrs, shape = row
 
         res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
         mapping = SubElement(res, 'mapping',
             source=self.server_id,
             sourceId=str(id),
-            lastUpdated=modified.isoformat(),
+            lastUpdated=updated.isoformat(),
             expires=(datetime.now() + timedelta(days=1)).isoformat())
 
         if 'displayName' in attrs:
@@ -325,7 +325,7 @@ def update_db(geometry, attrs, mapping_attrs):
                 # If the geometry is not already in the database, insert that geometry
                 uri = attrs.get('uri', str(GUID()))
                 cur = con.execute('''
-                    INSERT INTO shape (uri, geometries, modified, attrs)
+                    INSERT INTO shape (uri, geometries, updated, attrs)
                     VALUES (%s, ST_ForceCollection(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326)), %s, %s)
                     RETURNING id
                 ''', (uri, Jsonb(geometry), attrs['timestamp'], Jsonb(attrs)))

@@ -212,7 +212,7 @@ def cli(parent):
         with db.pool.connection() as con:
             con.execute('''
                 INSERT INTO shape
-                    (uri, geometries, modified, attrs)
+                    (uri, geometries, updated, attrs)
                 VALUES (
                     %s,
                     ST_ForceCollection(ST_GeomFromGeoJSON(%s)),
@@ -222,7 +222,7 @@ def cli(parent):
                 DO
                     UPDATE SET
                         geometries=EXCLUDED.geometries,
-                        modified=EXCLUDED.modified,
+                        updated=EXCLUDED.updated,
                         attrs=EXCLUDED.attrs
             ''', (url, Jsonb(geometry), attrs['timestamp'], Jsonb(attrs)))
 
