@@ -1,6 +1,7 @@
 from __future__ import annotations
 import sys
 import os
+import glob
 import click
 import lxml.objectify
 import lxml.etree
@@ -346,26 +347,18 @@ def update_db(geometry, attrs, mapping_attrs):
                 ''', (shape_id, 'lost', Jsonb(mapping_attrs)))
 
 
-@cli.command(help='Load GeoJSON geometries from <folder> into the database. Add attributes from <attr_file>.')
-@click.argument('folder')
-@click.argument('attr_file')
-def load(folder, attr_file):
-    # Open the attribute file as a JSON object
-    with open(attr_file, 'r') as f:
-        mapping = json.load(f)
-
+@cli.command(help='Load GeoJSON geometries from files matching <matching> into the database.')
+@click.argument('pattern')
+def load(pattern):
     # For each GeoJSON file in the folder, insert the geometry into the database
-    for filename in os.listdir(folder):
-        if not filename.endswith('.geojson'): continue
-
+    for filename in glob.glob(pattern):
         click.echo(f'Loading {filename}...', nl=False)
         try:
-            with open(os.path.join(folder, filename), 'r') as file:
+            with open(filename, 'r') as file:
                 geojson = json.load(file)
 
             geometry, attrs = extract_boundary(geojson)
-            mapping_attrs = mapping.get(os.path.join(folder, filename), {})
-            update_db(geometry, attrs, mapping_attrs)
+            update_db(geometry, attrs, None)
         finally:
             click.echo('done.')
 

@@ -80,7 +80,7 @@ def compose(obj, template, output):
     def servers(name='World', current=obj['model'], path=['/'], parent={}):
         for name, node, attrs in traverse(name, current, ports, path, parent):
             if node.get('server'):
-                yield name, attrs
+                yield name, node, attrs
 
     click.echo(f"Reading template {template}...")
     with open(template, "rt") as inp:

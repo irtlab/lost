@@ -7,4 +7,8 @@ if [ -n "$SERVICE_AREA" ] ; then
     }
 fi
 
+if [ -n "$LOAD_SHAPES" ] ; then
+    lost-server load "$LOAD_SHAPES"
+fi
+
 exec lost-server start $@
