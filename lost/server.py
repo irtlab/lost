@@ -313,7 +313,7 @@ def start(port, geo_table, civic_table, server_id, authoritative):
     app.run('0.0.0.0', port, debug=True, threaded=True, use_reloader=True)
 
 
-def update_db(geometry, attrs, mapping_attrs):
+def update_db(geometry, attrs, url_map):
         with db.pool.connection() as con:
             # Check if the geometry is already present in the database
             cur = con.execute('''
@@ -335,21 +335,31 @@ def update_db(geometry, attrs, mapping_attrs):
             else:
                 shape_id = previous[0]
 
-            if mapping_attrs is not None:
+            uri = attrs.get('uri')
+            if uri is not None and url_map is not None:
+                server_uri = url_map.get(uri)
+
                 con.execute('''
                     DELETE FROM server.mapping
                     WHERE srv='lost' and (shape IS NULL or SHAPE=%s)
                 ''', (shape_id,))
 
-                cur = con.execute('''
-                    INSERT INTO server.mapping (shape, srv, attrs)
-                    VALUES (%s, %s, %s)
-                ''', (shape_id, 'lost', Jsonb(mapping_attrs)))
+                if server_uri is not None:
+                    cur = con.execute('''
+                        INSERT INTO server.mapping (shape, srv, attrs)
+                        VALUES (%s, %s, %s)
+                    ''', (shape_id, 'lost', Jsonb({ 'uri': server_uri })))
 
 
 @cli.command(help='Load GeoJSON geometries from files matching <matching> into the database.')
+@click.option('--url-map', '-u', envvar='URL_MAP', help='JSON file with URL map')
 @click.argument('pattern')
-def load(pattern):
+def load(pattern, url_map):
+    if url_map is not None:
+        click.echo(f'Loading URL map from {url_map}')
+        with open(url_map, 'r') as file:
+            url_map = json.load(file)
+
     # For each GeoJSON file in the folder, insert the geometry into the database
     for filename in glob.glob(pattern):
         click.echo(f'Loading {filename}...', nl=False)
@@ -358,7 +368,7 @@ def load(pattern):
                 geojson = json.load(file)
 
             geometry, attrs = extract_boundary(geojson)
-            update_db(geometry, attrs, None)
+            update_db(geometry, attrs, url_map)
         finally:
             click.echo('done.')
 

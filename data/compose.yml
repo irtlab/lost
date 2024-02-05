@@ -1,0 +1,2332 @@
+version: "3.8"
+services:
+  lost-db-resolver:
+    container_name: lost-db-resolver
+    image: janakj.net/lost/db
+    restart: always
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/resolver/data:/var/lib/postgresql/data
+      - /run/postgresql/resolver:/run/postgresql
+
+  lost-db-root:
+    container_name: lost-db-root
+    image: janakj.net/lost/db
+    restart: always
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/root/data:/var/lib/postgresql/data
+      - /run/postgresql/server/root:/run/postgresql
+
+  lost-server-root:
+    container_name: lost-server-root
+    image: janakj.net/lost/server
+    restart: always
+    environment:
+      PORT: 5000
+      SERVER_ID: "lost-server-root"
+      LOAD_SHAPES: "data/world/*.geojson"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - /run/postgresql/server/root:/run/postgresql
+    depends_on:
+      - lost-db-root
+
+  lost-db-us:
+    container_name: lost-db-us
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us:/run/postgresql
+
+  lost-server-us:
+    container_name: lost-server-us
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5100
+      SERVER_ID: "lost-server-us"
+      LOAD_SHAPES: "data/world/us/*.geojson"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/148838"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5100:5100"
+    volumes:
+      - /run/postgresql/server/us:/run/postgresql
+    depends_on:
+      - lost-db-us
+
+  lost-db-us-al:
+    container_name: lost-db-us-al
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/al/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/al:/run/postgresql
+
+  lost-server-us-al:
+    container_name: lost-server-us-al
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5101
+      SERVER_ID: "lost-server-us-al"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161950"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5101:5101"
+    volumes:
+      - /run/postgresql/server/us/al:/run/postgresql
+    depends_on:
+      - lost-db-us-al
+
+  lost-db-us-ak:
+    container_name: lost-db-us-ak
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ak/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ak:/run/postgresql
+
+  lost-server-us-ak:
+    container_name: lost-server-us-ak
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5102
+      SERVER_ID: "lost-server-us-ak"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/1116270"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5102:5102"
+    volumes:
+      - /run/postgresql/server/us/ak:/run/postgresql
+    depends_on:
+      - lost-db-us-ak
+
+  lost-db-us-az:
+    container_name: lost-db-us-az
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/az/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/az:/run/postgresql
+
+  lost-server-us-az:
+    container_name: lost-server-us-az
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5103
+      SERVER_ID: "lost-server-us-az"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162018"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5103:5103"
+    volumes:
+      - /run/postgresql/server/us/az:/run/postgresql
+    depends_on:
+      - lost-db-us-az
+
+  lost-db-us-ar:
+    container_name: lost-db-us-ar
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ar/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ar:/run/postgresql
+
+  lost-server-us-ar:
+    container_name: lost-server-us-ar
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5104
+      SERVER_ID: "lost-server-us-ar"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161646"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5104:5104"
+    volumes:
+      - /run/postgresql/server/us/ar:/run/postgresql
+    depends_on:
+      - lost-db-us-ar
+
+  lost-db-us-ca:
+    container_name: lost-db-us-ca
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ca/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ca:/run/postgresql
+
+  lost-server-us-ca:
+    container_name: lost-server-us-ca
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5105
+      SERVER_ID: "lost-server-us-ca"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165475"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5105:5105"
+    volumes:
+      - /run/postgresql/server/us/ca:/run/postgresql
+    depends_on:
+      - lost-db-us-ca
+
+  lost-db-us-co:
+    container_name: lost-db-us-co
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/co/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/co:/run/postgresql
+
+  lost-server-us-co:
+    container_name: lost-server-us-co
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5106
+      SERVER_ID: "lost-server-us-co"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161961"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5106:5106"
+    volumes:
+      - /run/postgresql/server/us/co:/run/postgresql
+    depends_on:
+      - lost-db-us-co
+
+  lost-db-us-ct:
+    container_name: lost-db-us-ct
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ct/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ct:/run/postgresql
+
+  lost-server-us-ct:
+    container_name: lost-server-us-ct
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5107
+      SERVER_ID: "lost-server-us-ct"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165794"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5107:5107"
+    volumes:
+      - /run/postgresql/server/us/ct:/run/postgresql
+    depends_on:
+      - lost-db-us-ct
+
+  lost-db-us-de:
+    container_name: lost-db-us-de
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/de/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/de:/run/postgresql
+
+  lost-server-us-de:
+    container_name: lost-server-us-de
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5108
+      SERVER_ID: "lost-server-us-de"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162110"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5108:5108"
+    volumes:
+      - /run/postgresql/server/us/de:/run/postgresql
+    depends_on:
+      - lost-db-us-de
+
+  lost-db-us-fl:
+    container_name: lost-db-us-fl
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/fl/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/fl:/run/postgresql
+
+  lost-server-us-fl:
+    container_name: lost-server-us-fl
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5109
+      SERVER_ID: "lost-server-us-fl"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162050"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5109:5109"
+    volumes:
+      - /run/postgresql/server/us/fl:/run/postgresql
+    depends_on:
+      - lost-db-us-fl
+
+  lost-db-us-ga:
+    container_name: lost-db-us-ga
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ga/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ga:/run/postgresql
+
+  lost-server-us-ga:
+    container_name: lost-server-us-ga
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5110
+      SERVER_ID: "lost-server-us-ga"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161957"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5110:5110"
+    volumes:
+      - /run/postgresql/server/us/ga:/run/postgresql
+    depends_on:
+      - lost-db-us-ga
+
+  lost-db-us-hi:
+    container_name: lost-db-us-hi
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/hi/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/hi:/run/postgresql
+
+  lost-server-us-hi:
+    container_name: lost-server-us-hi
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5111
+      SERVER_ID: "lost-server-us-hi"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/166563"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5111:5111"
+    volumes:
+      - /run/postgresql/server/us/hi:/run/postgresql
+    depends_on:
+      - lost-db-us-hi
+
+  lost-db-us-id:
+    container_name: lost-db-us-id
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/id/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/id:/run/postgresql
+
+  lost-server-us-id:
+    container_name: lost-server-us-id
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5112
+      SERVER_ID: "lost-server-us-id"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162116"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5112:5112"
+    volumes:
+      - /run/postgresql/server/us/id:/run/postgresql
+    depends_on:
+      - lost-db-us-id
+
+  lost-db-us-il:
+    container_name: lost-db-us-il
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/il/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/il:/run/postgresql
+
+  lost-server-us-il:
+    container_name: lost-server-us-il
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5113
+      SERVER_ID: "lost-server-us-il"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/122586"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5113:5113"
+    volumes:
+      - /run/postgresql/server/us/il:/run/postgresql
+    depends_on:
+      - lost-db-us-il
+
+  lost-db-us-in:
+    container_name: lost-db-us-in
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/in/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/in:/run/postgresql
+
+  lost-server-us-in:
+    container_name: lost-server-us-in
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5114
+      SERVER_ID: "lost-server-us-in"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161816"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5114:5114"
+    volumes:
+      - /run/postgresql/server/us/in:/run/postgresql
+    depends_on:
+      - lost-db-us-in
+
+  lost-db-us-ia:
+    container_name: lost-db-us-ia
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ia/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ia:/run/postgresql
+
+  lost-server-us-ia:
+    container_name: lost-server-us-ia
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5115
+      SERVER_ID: "lost-server-us-ia"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161650"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5115:5115"
+    volumes:
+      - /run/postgresql/server/us/ia:/run/postgresql
+    depends_on:
+      - lost-db-us-ia
+
+  lost-db-us-ks:
+    container_name: lost-db-us-ks
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ks/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ks:/run/postgresql
+
+  lost-server-us-ks:
+    container_name: lost-server-us-ks
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5116
+      SERVER_ID: "lost-server-us-ks"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161644"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5116:5116"
+    volumes:
+      - /run/postgresql/server/us/ks:/run/postgresql
+    depends_on:
+      - lost-db-us-ks
+
+  lost-db-us-ky:
+    container_name: lost-db-us-ky
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ky/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ky:/run/postgresql
+
+  lost-server-us-ky:
+    container_name: lost-server-us-ky
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5117
+      SERVER_ID: "lost-server-us-ky"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161655"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5117:5117"
+    volumes:
+      - /run/postgresql/server/us/ky:/run/postgresql
+    depends_on:
+      - lost-db-us-ky
+
+  lost-db-us-la:
+    container_name: lost-db-us-la
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/la/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/la:/run/postgresql
+
+  lost-server-us-la:
+    container_name: lost-server-us-la
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5118
+      SERVER_ID: "lost-server-us-la"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/224922"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5118:5118"
+    volumes:
+      - /run/postgresql/server/us/la:/run/postgresql
+    depends_on:
+      - lost-db-us-la
+
+  lost-db-us-me:
+    container_name: lost-db-us-me
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/me/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/me:/run/postgresql
+
+  lost-server-us-me:
+    container_name: lost-server-us-me
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5119
+      SERVER_ID: "lost-server-us-me"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/63512"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5119:5119"
+    volumes:
+      - /run/postgresql/server/us/me:/run/postgresql
+    depends_on:
+      - lost-db-us-me
+
+  lost-db-us-md:
+    container_name: lost-db-us-md
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/md/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/md:/run/postgresql
+
+  lost-server-us-md:
+    container_name: lost-server-us-md
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5120
+      SERVER_ID: "lost-server-us-md"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162112"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5120:5120"
+    volumes:
+      - /run/postgresql/server/us/md:/run/postgresql
+    depends_on:
+      - lost-db-us-md
+
+  lost-db-us-ma:
+    container_name: lost-db-us-ma
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ma/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ma:/run/postgresql
+
+  lost-server-us-ma:
+    container_name: lost-server-us-ma
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5121
+      SERVER_ID: "lost-server-us-ma"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/61315"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5121:5121"
+    volumes:
+      - /run/postgresql/server/us/ma:/run/postgresql
+    depends_on:
+      - lost-db-us-ma
+
+  lost-db-us-mi:
+    container_name: lost-db-us-mi
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/mi/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/mi:/run/postgresql
+
+  lost-server-us-mi:
+    container_name: lost-server-us-mi
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5122
+      SERVER_ID: "lost-server-us-mi"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165789"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5122:5122"
+    volumes:
+      - /run/postgresql/server/us/mi:/run/postgresql
+    depends_on:
+      - lost-db-us-mi
+
+  lost-db-us-mn:
+    container_name: lost-db-us-mn
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/mn/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/mn:/run/postgresql
+
+  lost-server-us-mn:
+    container_name: lost-server-us-mn
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5123
+      SERVER_ID: "lost-server-us-mn"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165471"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5123:5123"
+    volumes:
+      - /run/postgresql/server/us/mn:/run/postgresql
+    depends_on:
+      - lost-db-us-mn
+
+  lost-db-us-ms:
+    container_name: lost-db-us-ms
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ms/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ms:/run/postgresql
+
+  lost-server-us-ms:
+    container_name: lost-server-us-ms
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5124
+      SERVER_ID: "lost-server-us-ms"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161943"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5124:5124"
+    volumes:
+      - /run/postgresql/server/us/ms:/run/postgresql
+    depends_on:
+      - lost-db-us-ms
+
+  lost-db-us-mo:
+    container_name: lost-db-us-mo
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/mo/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/mo:/run/postgresql
+
+  lost-server-us-mo:
+    container_name: lost-server-us-mo
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5125
+      SERVER_ID: "lost-server-us-mo"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161638"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5125:5125"
+    volumes:
+      - /run/postgresql/server/us/mo:/run/postgresql
+    depends_on:
+      - lost-db-us-mo
+
+  lost-db-us-mt:
+    container_name: lost-db-us-mt
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/mt/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/mt:/run/postgresql
+
+  lost-server-us-mt:
+    container_name: lost-server-us-mt
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5126
+      SERVER_ID: "lost-server-us-mt"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162115"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5126:5126"
+    volumes:
+      - /run/postgresql/server/us/mt:/run/postgresql
+    depends_on:
+      - lost-db-us-mt
+
+  lost-db-us-ne:
+    container_name: lost-db-us-ne
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ne/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ne:/run/postgresql
+
+  lost-server-us-ne:
+    container_name: lost-server-us-ne
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5127
+      SERVER_ID: "lost-server-us-ne"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161648"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5127:5127"
+    volumes:
+      - /run/postgresql/server/us/ne:/run/postgresql
+    depends_on:
+      - lost-db-us-ne
+
+  lost-db-us-nv:
+    container_name: lost-db-us-nv
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nv/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nv:/run/postgresql
+
+  lost-server-us-nv:
+    container_name: lost-server-us-nv
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5128
+      SERVER_ID: "lost-server-us-nv"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165473"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5128:5128"
+    volumes:
+      - /run/postgresql/server/us/nv:/run/postgresql
+    depends_on:
+      - lost-db-us-nv
+
+  lost-db-us-nh:
+    container_name: lost-db-us-nh
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nh/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nh:/run/postgresql
+
+  lost-server-us-nh:
+    container_name: lost-server-us-nh
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5129
+      SERVER_ID: "lost-server-us-nh"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/67213"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5129:5129"
+    volumes:
+      - /run/postgresql/server/us/nh:/run/postgresql
+    depends_on:
+      - lost-db-us-nh
+
+  lost-db-us-nj:
+    container_name: lost-db-us-nj
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nj/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nj:/run/postgresql
+
+  lost-server-us-nj:
+    container_name: lost-server-us-nj
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5130
+      SERVER_ID: "lost-server-us-nj"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/224951"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5130:5130"
+    volumes:
+      - /run/postgresql/server/us/nj:/run/postgresql
+    depends_on:
+      - lost-db-us-nj
+
+  lost-db-us-nm:
+    container_name: lost-db-us-nm
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nm/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nm:/run/postgresql
+
+  lost-server-us-nm:
+    container_name: lost-server-us-nm
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5131
+      SERVER_ID: "lost-server-us-nm"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162014"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5131:5131"
+    volumes:
+      - /run/postgresql/server/us/nm:/run/postgresql
+    depends_on:
+      - lost-db-us-nm
+
+  lost-db-us-ny:
+    container_name: lost-db-us-ny
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ny/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ny:/run/postgresql
+
+  lost-server-us-ny:
+    container_name: lost-server-us-ny
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5132
+      SERVER_ID: "lost-server-us-ny"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/61320"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5132:5132"
+    volumes:
+      - /run/postgresql/server/us/ny:/run/postgresql
+    depends_on:
+      - lost-db-us-ny
+
+  lost-db-us-nc:
+    container_name: lost-db-us-nc
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nc/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nc:/run/postgresql
+
+  lost-server-us-nc:
+    container_name: lost-server-us-nc
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5133
+      SERVER_ID: "lost-server-us-nc"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/224045"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5133:5133"
+    volumes:
+      - /run/postgresql/server/us/nc:/run/postgresql
+    depends_on:
+      - lost-db-us-nc
+
+  lost-db-us-nd:
+    container_name: lost-db-us-nd
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/nd/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/nd:/run/postgresql
+
+  lost-server-us-nd:
+    container_name: lost-server-us-nd
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5134
+      SERVER_ID: "lost-server-us-nd"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161653"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5134:5134"
+    volumes:
+      - /run/postgresql/server/us/nd:/run/postgresql
+    depends_on:
+      - lost-db-us-nd
+
+  lost-db-us-oh:
+    container_name: lost-db-us-oh
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/oh/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/oh:/run/postgresql
+
+  lost-server-us-oh:
+    container_name: lost-server-us-oh
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5135
+      SERVER_ID: "lost-server-us-oh"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162061"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5135:5135"
+    volumes:
+      - /run/postgresql/server/us/oh:/run/postgresql
+    depends_on:
+      - lost-db-us-oh
+
+  lost-db-us-ok:
+    container_name: lost-db-us-ok
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ok/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ok:/run/postgresql
+
+  lost-server-us-ok:
+    container_name: lost-server-us-ok
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5136
+      SERVER_ID: "lost-server-us-ok"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161645"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5136:5136"
+    volumes:
+      - /run/postgresql/server/us/ok:/run/postgresql
+    depends_on:
+      - lost-db-us-ok
+
+  lost-db-us-or:
+    container_name: lost-db-us-or
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/or/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/or:/run/postgresql
+
+  lost-server-us-or:
+    container_name: lost-server-us-or
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5137
+      SERVER_ID: "lost-server-us-or"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165476"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5137:5137"
+    volumes:
+      - /run/postgresql/server/us/or:/run/postgresql
+    depends_on:
+      - lost-db-us-or
+
+  lost-db-us-pa:
+    container_name: lost-db-us-pa
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/pa/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/pa:/run/postgresql
+
+  lost-server-us-pa:
+    container_name: lost-server-us-pa
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5138
+      SERVER_ID: "lost-server-us-pa"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162109"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5138:5138"
+    volumes:
+      - /run/postgresql/server/us/pa:/run/postgresql
+    depends_on:
+      - lost-db-us-pa
+
+  lost-db-us-ri:
+    container_name: lost-db-us-ri
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ri/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ri:/run/postgresql
+
+  lost-server-us-ri:
+    container_name: lost-server-us-ri
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5139
+      SERVER_ID: "lost-server-us-ri"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/392915"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5139:5139"
+    volumes:
+      - /run/postgresql/server/us/ri:/run/postgresql
+    depends_on:
+      - lost-db-us-ri
+
+  lost-db-us-sc:
+    container_name: lost-db-us-sc
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/sc/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/sc:/run/postgresql
+
+  lost-server-us-sc:
+    container_name: lost-server-us-sc
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5140
+      SERVER_ID: "lost-server-us-sc"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/224040"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5140:5140"
+    volumes:
+      - /run/postgresql/server/us/sc:/run/postgresql
+    depends_on:
+      - lost-db-us-sc
+
+  lost-db-us-sd:
+    container_name: lost-db-us-sd
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/sd/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/sd:/run/postgresql
+
+  lost-server-us-sd:
+    container_name: lost-server-us-sd
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5141
+      SERVER_ID: "lost-server-us-sd"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161652"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5141:5141"
+    volumes:
+      - /run/postgresql/server/us/sd:/run/postgresql
+    depends_on:
+      - lost-db-us-sd
+
+  lost-db-us-tn:
+    container_name: lost-db-us-tn
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/tn/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/tn:/run/postgresql
+
+  lost-server-us-tn:
+    container_name: lost-server-us-tn
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5142
+      SERVER_ID: "lost-server-us-tn"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161838"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5142:5142"
+    volumes:
+      - /run/postgresql/server/us/tn:/run/postgresql
+    depends_on:
+      - lost-db-us-tn
+
+  lost-db-us-tx:
+    container_name: lost-db-us-tx
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/tx/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/tx:/run/postgresql
+
+  lost-server-us-tx:
+    container_name: lost-server-us-tx
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5143
+      SERVER_ID: "lost-server-us-tx"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/114690"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5143:5143"
+    volumes:
+      - /run/postgresql/server/us/tx:/run/postgresql
+    depends_on:
+      - lost-db-us-tx
+
+  lost-db-us-ut:
+    container_name: lost-db-us-ut
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/ut/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/ut:/run/postgresql
+
+  lost-server-us-ut:
+    container_name: lost-server-us-ut
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5144
+      SERVER_ID: "lost-server-us-ut"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161993"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5144:5144"
+    volumes:
+      - /run/postgresql/server/us/ut:/run/postgresql
+    depends_on:
+      - lost-db-us-ut
+
+  lost-db-us-vt:
+    container_name: lost-db-us-vt
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/vt/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/vt:/run/postgresql
+
+  lost-server-us-vt:
+    container_name: lost-server-us-vt
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5145
+      SERVER_ID: "lost-server-us-vt"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/60759"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5145:5145"
+    volumes:
+      - /run/postgresql/server/us/vt:/run/postgresql
+    depends_on:
+      - lost-db-us-vt
+
+  lost-db-us-va:
+    container_name: lost-db-us-va
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/va/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/va:/run/postgresql
+
+  lost-server-us-va:
+    container_name: lost-server-us-va
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5146
+      SERVER_ID: "lost-server-us-va"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/224042"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5146:5146"
+    volumes:
+      - /run/postgresql/server/us/va:/run/postgresql
+    depends_on:
+      - lost-db-us-va
+
+  lost-db-us-wa:
+    container_name: lost-db-us-wa
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/wa/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/wa:/run/postgresql
+
+  lost-server-us-wa:
+    container_name: lost-server-us-wa
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5147
+      SERVER_ID: "lost-server-us-wa"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165479"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5147:5147"
+    volumes:
+      - /run/postgresql/server/us/wa:/run/postgresql
+    depends_on:
+      - lost-db-us-wa
+
+  lost-db-us-wv:
+    container_name: lost-db-us-wv
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/wv/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/wv:/run/postgresql
+
+  lost-server-us-wv:
+    container_name: lost-server-us-wv
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5148
+      SERVER_ID: "lost-server-us-wv"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162068"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5148:5148"
+    volumes:
+      - /run/postgresql/server/us/wv:/run/postgresql
+    depends_on:
+      - lost-db-us-wv
+
+  lost-db-us-wi:
+    container_name: lost-db-us-wi
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/wi/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/wi:/run/postgresql
+
+  lost-server-us-wi:
+    container_name: lost-server-us-wi
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5149
+      SERVER_ID: "lost-server-us-wi"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/165466"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5149:5149"
+    volumes:
+      - /run/postgresql/server/us/wi:/run/postgresql
+    depends_on:
+      - lost-db-us-wi
+
+  lost-db-us-wy:
+    container_name: lost-db-us-wy
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/wy/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/wy:/run/postgresql
+
+  lost-server-us-wy:
+    container_name: lost-server-us-wy
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5150
+      SERVER_ID: "lost-server-us-wy"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/161991"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5150:5150"
+    volumes:
+      - /run/postgresql/server/us/wy:/run/postgresql
+    depends_on:
+      - lost-db-us-wy
+
+  lost-db-us-dc:
+    container_name: lost-db-us-dc
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ us ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/us/dc/data:/var/lib/postgresql/data
+      - /run/postgresql/server/us/dc:/run/postgresql
+
+  lost-server-us-dc:
+    container_name: lost-server-us-dc
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ us ]
+    environment:
+      PORT: 5151
+      SERVER_ID: "lost-server-us-dc"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/162069"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5151:5151"
+    volumes:
+      - /run/postgresql/server/us/dc:/run/postgresql
+    depends_on:
+      - lost-db-us-dc
+
+  lost-db-de:
+    container_name: lost-db-de
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/de/data:/var/lib/postgresql/data
+      - /run/postgresql/server/de:/run/postgresql
+
+  lost-server-de:
+    container_name: lost-server-de
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5201
+      SERVER_ID: "lost-server-de"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/51477"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5201:5201"
+    volumes:
+      - /run/postgresql/server/de:/run/postgresql
+    depends_on:
+      - lost-db-de
+
+  lost-db-cz:
+    container_name: lost-db-cz
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/cz/data:/var/lib/postgresql/data
+      - /run/postgresql/server/cz:/run/postgresql
+
+  lost-server-cz:
+    container_name: lost-server-cz
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5202
+      SERVER_ID: "lost-server-cz"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/51684"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5202:5202"
+    volumes:
+      - /run/postgresql/server/cz:/run/postgresql
+    depends_on:
+      - lost-db-cz
+
+  lost-db-ro:
+    container_name: lost-db-ro
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/ro/data:/var/lib/postgresql/data
+      - /run/postgresql/server/ro:/run/postgresql
+
+  lost-server-ro:
+    container_name: lost-server-ro
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5203
+      SERVER_ID: "lost-server-ro"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/90689"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5203:5203"
+    volumes:
+      - /run/postgresql/server/ro:/run/postgresql
+    depends_on:
+      - lost-db-ro
+
+  lost-db-ee:
+    container_name: lost-db-ee
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/ee/data:/var/lib/postgresql/data
+      - /run/postgresql/server/ee:/run/postgresql
+
+  lost-server-ee:
+    container_name: lost-server-ee
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5204
+      SERVER_ID: "lost-server-ee"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/79510"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5204:5204"
+    volumes:
+      - /run/postgresql/server/ee:/run/postgresql
+    depends_on:
+      - lost-db-ee
+
+  lost-db-sk:
+    container_name: lost-db-sk
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/sk/data:/var/lib/postgresql/data
+      - /run/postgresql/server/sk:/run/postgresql
+
+  lost-server-sk:
+    container_name: lost-server-sk
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5205
+      SERVER_ID: "lost-server-sk"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/14296"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5205:5205"
+    volumes:
+      - /run/postgresql/server/sk:/run/postgresql
+    depends_on:
+      - lost-db-sk
+
+  lost-db-nl:
+    container_name: lost-db-nl
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/nl/data:/var/lib/postgresql/data
+      - /run/postgresql/server/nl:/run/postgresql
+
+  lost-server-nl:
+    container_name: lost-server-nl
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5206
+      SERVER_ID: "lost-server-nl"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/2323309"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5206:5206"
+    volumes:
+      - /run/postgresql/server/nl:/run/postgresql
+    depends_on:
+      - lost-db-nl
+
+  lost-db-hr:
+    container_name: lost-db-hr
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/hr/data:/var/lib/postgresql/data
+      - /run/postgresql/server/hr:/run/postgresql
+
+  lost-server-hr:
+    container_name: lost-server-hr
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5207
+      SERVER_ID: "lost-server-hr"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/214885"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5207:5207"
+    volumes:
+      - /run/postgresql/server/hr:/run/postgresql
+    depends_on:
+      - lost-db-hr
+
+  lost-db-lu:
+    container_name: lost-db-lu
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/lu/data:/var/lib/postgresql/data
+      - /run/postgresql/server/lu:/run/postgresql
+
+  lost-server-lu:
+    container_name: lost-server-lu
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5208
+      SERVER_ID: "lost-server-lu"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/2171347"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5208:5208"
+    volumes:
+      - /run/postgresql/server/lu:/run/postgresql
+    depends_on:
+      - lost-db-lu
+
+  lost-db-hu:
+    container_name: lost-db-hu
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/hu/data:/var/lib/postgresql/data
+      - /run/postgresql/server/hu:/run/postgresql
+
+  lost-server-hu:
+    container_name: lost-server-hu
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5209
+      SERVER_ID: "lost-server-hu"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/21335"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5209:5209"
+    volumes:
+      - /run/postgresql/server/hu:/run/postgresql
+    depends_on:
+      - lost-db-hu
+
+  lost-db-lv:
+    container_name: lost-db-lv
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/lv/data:/var/lib/postgresql/data
+      - /run/postgresql/server/lv:/run/postgresql
+
+  lost-server-lv:
+    container_name: lost-server-lv
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5210
+      SERVER_ID: "lost-server-lv"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/72594"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5210:5210"
+    volumes:
+      - /run/postgresql/server/lv:/run/postgresql
+    depends_on:
+      - lost-db-lv
+
+  lost-db-pl:
+    container_name: lost-db-pl
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/pl/data:/var/lib/postgresql/data
+      - /run/postgresql/server/pl:/run/postgresql
+
+  lost-server-pl:
+    container_name: lost-server-pl
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5211
+      SERVER_ID: "lost-server-pl"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/49715"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5211:5211"
+    volumes:
+      - /run/postgresql/server/pl:/run/postgresql
+    depends_on:
+      - lost-db-pl
+
+  lost-db-gr:
+    container_name: lost-db-gr
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/gr/data:/var/lib/postgresql/data
+      - /run/postgresql/server/gr:/run/postgresql
+
+  lost-server-gr:
+    container_name: lost-server-gr
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5212
+      SERVER_ID: "lost-server-gr"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/192307"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5212:5212"
+    volumes:
+      - /run/postgresql/server/gr:/run/postgresql
+    depends_on:
+      - lost-db-gr
+
+  lost-db-lt:
+    container_name: lost-db-lt
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/lt/data:/var/lib/postgresql/data
+      - /run/postgresql/server/lt:/run/postgresql
+
+  lost-server-lt:
+    container_name: lost-server-lt
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5213
+      SERVER_ID: "lost-server-lt"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/72596"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5213:5213"
+    volumes:
+      - /run/postgresql/server/lt:/run/postgresql
+    depends_on:
+      - lost-db-lt
+
+  lost-db-pt:
+    container_name: lost-db-pt
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/pt/data:/var/lib/postgresql/data
+      - /run/postgresql/server/pt:/run/postgresql
+
+  lost-server-pt:
+    container_name: lost-server-pt
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5214
+      SERVER_ID: "lost-server-pt"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/295480"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5214:5214"
+    volumes:
+      - /run/postgresql/server/pt:/run/postgresql
+    depends_on:
+      - lost-db-pt
+
+  lost-db-se:
+    container_name: lost-db-se
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/se/data:/var/lib/postgresql/data
+      - /run/postgresql/server/se:/run/postgresql
+
+  lost-server-se:
+    container_name: lost-server-se
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5215
+      SERVER_ID: "lost-server-se"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/52822"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5215:5215"
+    volumes:
+      - /run/postgresql/server/se:/run/postgresql
+    depends_on:
+      - lost-db-se
+
+  lost-db-es:
+    container_name: lost-db-es
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/es/data:/var/lib/postgresql/data
+      - /run/postgresql/server/es:/run/postgresql
+
+  lost-server-es:
+    container_name: lost-server-es
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5216
+      SERVER_ID: "lost-server-es"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/1311341"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5216:5216"
+    volumes:
+      - /run/postgresql/server/es:/run/postgresql
+    depends_on:
+      - lost-db-es
+
+  lost-db-dk:
+    container_name: lost-db-dk
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/dk/data:/var/lib/postgresql/data
+      - /run/postgresql/server/dk:/run/postgresql
+
+  lost-server-dk:
+    container_name: lost-server-dk
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5217
+      SERVER_ID: "lost-server-dk"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/50046"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5217:5217"
+    volumes:
+      - /run/postgresql/server/dk:/run/postgresql
+    depends_on:
+      - lost-db-dk
+
+  lost-db-bg:
+    container_name: lost-db-bg
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/bg/data:/var/lib/postgresql/data
+      - /run/postgresql/server/bg:/run/postgresql
+
+  lost-server-bg:
+    container_name: lost-server-bg
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5218
+      SERVER_ID: "lost-server-bg"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/186382"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5218:5218"
+    volumes:
+      - /run/postgresql/server/bg:/run/postgresql
+    depends_on:
+      - lost-db-bg
+
+  lost-db-at:
+    container_name: lost-db-at
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/at/data:/var/lib/postgresql/data
+      - /run/postgresql/server/at:/run/postgresql
+
+  lost-server-at:
+    container_name: lost-server-at
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5219
+      SERVER_ID: "lost-server-at"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/16239"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5219:5219"
+    volumes:
+      - /run/postgresql/server/at:/run/postgresql
+    depends_on:
+      - lost-db-at
+
+  lost-db-it:
+    container_name: lost-db-it
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/it/data:/var/lib/postgresql/data
+      - /run/postgresql/server/it:/run/postgresql
+
+  lost-server-it:
+    container_name: lost-server-it
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5220
+      SERVER_ID: "lost-server-it"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/365331"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5220:5220"
+    volumes:
+      - /run/postgresql/server/it:/run/postgresql
+    depends_on:
+      - lost-db-it
+
+  lost-db-ie:
+    container_name: lost-db-ie
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/ie/data:/var/lib/postgresql/data
+      - /run/postgresql/server/ie:/run/postgresql
+
+  lost-server-ie:
+    container_name: lost-server-ie
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5221
+      SERVER_ID: "lost-server-ie"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/62273"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5221:5221"
+    volumes:
+      - /run/postgresql/server/ie:/run/postgresql
+    depends_on:
+      - lost-db-ie
+
+  lost-db-fi:
+    container_name: lost-db-fi
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/fi/data:/var/lib/postgresql/data
+      - /run/postgresql/server/fi:/run/postgresql
+
+  lost-server-fi:
+    container_name: lost-server-fi
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5222
+      SERVER_ID: "lost-server-fi"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/54224"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5222:5222"
+    volumes:
+      - /run/postgresql/server/fi:/run/postgresql
+    depends_on:
+      - lost-db-fi
+
+  lost-db-cy:
+    container_name: lost-db-cy
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/cy/data:/var/lib/postgresql/data
+      - /run/postgresql/server/cy:/run/postgresql
+
+  lost-server-cy:
+    container_name: lost-server-cy
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5223
+      SERVER_ID: "lost-server-cy"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/307787"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5223:5223"
+    volumes:
+      - /run/postgresql/server/cy:/run/postgresql
+    depends_on:
+      - lost-db-cy
+
+  lost-db-be:
+    container_name: lost-db-be
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/be/data:/var/lib/postgresql/data
+      - /run/postgresql/server/be:/run/postgresql
+
+  lost-server-be:
+    container_name: lost-server-be
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5224
+      SERVER_ID: "lost-server-be"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/52411"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5224:5224"
+    volumes:
+      - /run/postgresql/server/be:/run/postgresql
+    depends_on:
+      - lost-db-be
+
+  lost-db-fr:
+    container_name: lost-db-fr
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/fr/data:/var/lib/postgresql/data
+      - /run/postgresql/server/fr:/run/postgresql
+
+  lost-server-fr:
+    container_name: lost-server-fr
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5225
+      SERVER_ID: "lost-server-fr"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/2202162"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5225:5225"
+    volumes:
+      - /run/postgresql/server/fr:/run/postgresql
+    depends_on:
+      - lost-db-fr
+
+  lost-db-si:
+    container_name: lost-db-si
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/si/data:/var/lib/postgresql/data
+      - /run/postgresql/server/si:/run/postgresql
+
+  lost-server-si:
+    container_name: lost-server-si
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5226
+      SERVER_ID: "lost-server-si"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/218657"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5226:5226"
+    volumes:
+      - /run/postgresql/server/si:/run/postgresql
+    depends_on:
+      - lost-db-si
+
+  lost-db-mt:
+    container_name: lost-db-mt
+    image: janakj.net/lost/db
+    restart: always
+    profiles: [ eu ]
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/mt/data:/var/lib/postgresql/data
+      - /run/postgresql/server/mt:/run/postgresql
+
+  lost-server-mt:
+    container_name: lost-server-mt
+    image: janakj.net/lost/server
+    restart: always
+    profiles: [ eu ]
+    environment:
+      PORT: 5227
+      SERVER_ID: "lost-server-mt"
+      SERVICE_AREA: "https://www.openstreetmap.org/relation/365307"
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:5227:5227"
+    volumes:
+      - /run/postgresql/server/mt:/run/postgresql
+    depends_on:
+      - lost-db-mt
+

@@ -41,6 +41,7 @@ services:
       LOAD_SHAPES: "{{ node['loadShapes'] }}"
 {% endif %}
 {% if node['osmId'] %}
+{% set _ = ports.map(url_prefix + '/' + node['osmId'], "http://lost-server-" + id + ':' + str(attrs['$port'])) %}
       SERVICE_AREA: "{{ url_prefix }}/{{ node['osmId'] }}"
 {% endif %}
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"

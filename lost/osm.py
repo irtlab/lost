@@ -49,7 +49,9 @@ def extract_boundary(obj: dict):
             continue
 
         attrs = dict()
+        attrs['type'] = props['type']
         attrs['id'] = props['id']
+        attrs['uri'] = f"https://www.openstreetmap.org/{props['type']}/{props['id']}"
         attrs['timestamp'] = props['timestamp']
 
         with suppress(KeyError): attrs['country'] = tags['ISO3166-1']

@@ -15,6 +15,7 @@ class PortGenerator:
     current: int
     def __init__(self, base=1024):
         self.current = base
+        self.url_map = {}
 
     def next(self):
         self.current = self.current + 1
@@ -22,6 +23,9 @@ class PortGenerator:
 
     def setBase(self, base):
         self.current = base
+
+    def map(self, osm_id, server_url):
+        self.url_map[osm_id] = server_url
 
 
 def build_path(comps):
@@ -72,8 +76,9 @@ def cli(ctx, model, url_prefix):
 @cli.command(help='Generate Docker compose file')
 @click.option('--template', '-t', envvar='TEMPLATE', default=f'{DATA_DIR}/compose.yml.jinja2', help='Compose YAML template')
 @click.option('--output', '-o', envvar='OUTPUT', default=f'{DATA_DIR}/compose.yml', help='Compose YAML file')
+@click.option('--url-map', '-u', envvar='URL_MAP', default=f'{DATA_DIR}/url-map.json', help='URL map file')
 @click.pass_obj
-def compose(obj, template, output):
+def compose(obj, template, output, url_map):
     ports = PortGenerator()
     env = Environment(autoescape=False, trim_blocks=True)
 
@@ -87,7 +92,11 @@ def compose(obj, template, output):
         tpl = env.from_string(inp.read())
         click.echo(f"Writing output to {output}...")
         with open(output, "wt") as out:
-            out.write(tpl.render(url_prefix=obj['url_prefix'], ports=ports, servers=servers))
+            out.write(tpl.render(url_prefix=obj['url_prefix'], ports=ports, str=str, servers=servers))
+
+    click.echo(f'Writing URL map to {url_map}')
+    with open(url_map, 'wt') as f:
+        json.dump(ports.url_map, f, indent=4)
 
 
 @cli.command(help='Fetch all OSM objects from the model')
