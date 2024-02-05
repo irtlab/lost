@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  lost-db-resolver:
+    container_name: lost-db-resolver
+    image: janakj.net/lost/db
+    restart: always
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/resolver/data:/var/lib/postgresql/data
+      - /run/postgresql/resolver:/run/postgresql
+
+{% for name, server in servers() %}
+{% set id = server['$path'].replace('/', '-') %}
+  lost-db-{{ id }}:
+    container_name: lost-db-{{ id }}
+    image: janakj.net/lost/db
+    restart: always
+{% if server['profile'] %}
+    profiles: [ {{ server['profile'] }} ]
+{% endif %}
+    shm_size: "256MB"
+    environment:
+      POSTGRES_PASSWORD: mLFC3YRH
+    volumes:
+      - ${PWD}/db/server/{{ server['$path'] }}/data:/var/lib/postgresql/data
+      - /run/postgresql/server/{{ server['$path'] }}:/run/postgresql
+
+  lost-server-{{ id }}:
+    container_name: lost-server-{{ id }}
+    image: janakj.net/lost/server
+    restart: always
+{% if server['profile'] %}
+    profiles: [ {{ server['profile'] }} ]
+{% endif %}
+    environment:
+      PORT: {{ server['$port'] }}
+      SERVER_ID: "lost-server-{{ id }}"
+{% if server['osmId'] %}
+      SERVICE_AREA: "{{ url_prefix }}/{{ server['osmId'] }}"
+{% endif %}
+      DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
+    ports:
+      - "127.0.0.1:{{ server['$port'] }}:{{ server['$port'] }}"
+    volumes:
+      - /run/postgresql/server/{{ server['$path'] }}:/run/postgresql
+    depends_on:
+      - lost-db-{{ id }}
+
+{% endfor %}

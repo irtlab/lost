@@ -1,0 +1,414 @@
+{
+    "$port"     : 5000,
+    "server"    : true,
+    "$path"     : "root",
+    "children"  : {
+        "United States": {
+            "server"   : true,
+            "$path"    : "/us",
+            "osmId"    : "relation/148838",
+            "$port"    : 5100,
+            "profile"  : "us",
+            "fileName" : "data/world/united-states.geojson",
+            "children" : {
+                "Alabama" : {
+                    "server" : true,
+                    "$path"  : "al",
+                    "osmId"  : "relation/161950"
+                },
+                "Alaska" : {
+                    "server" : true,
+                    "$path"  : "ak",
+                    "osmId"  : "relation/1116270"
+                },
+                "Arizona": {
+                    "server" : true,
+                    "$path"  : "az",
+                    "osmId"  : "relation/162018"
+                },
+                "Arkansas": {
+                    "server" : true,
+                    "$path"  : "ar",
+                    "osmId"  : "relation/161646"
+                },
+                "California": {
+                    "server" : true,
+                    "$path"  : "ca",
+                    "osmId"  : "relation/165475"
+                },
+                "Colorado": {
+                    "server" : true,
+                    "$path"  : "co",
+                    "osmId"  : "relation/161961"
+                },
+                "Connecticut": {
+                    "server" : true,
+                    "$path"  : "ct",
+                    "osmId"  : "relation/165794"
+                },
+                "Delaware": {
+                    "server" : true,
+                    "$path"  : "de",
+                    "osmId"  : "relation/162110"
+                },
+                "Florida": {
+                    "server" : true,
+                    "$path"  : "fl",
+                    "osmId"  : "relation/162050"
+                },
+                "Georgia": {
+                    "server" : true,
+                    "$path"  : "ga",
+                    "osmId"  : "relation/161957"
+                },
+                "Hawaii": {
+                    "server" : true,
+                    "$path"  : "hi",
+                    "osmId"  : "relation/166563"
+                },
+                "Idaho": {
+                    "server" : true,
+                    "$path"  : "id",
+                    "osmId"  : "relation/162116"
+                },
+                "Illinois": {
+                    "server" : true,
+                    "$path"  : "il",
+                    "osmId"  : "relation/122586"
+                },
+                "Indiana": {
+                    "server" : true,
+                    "osmId"  : "relation/161816",
+                    "$path"  : "in"
+                },
+                "Iowa": {
+                    "server" : true,
+                    "osmId"  : "relation/161650",
+                    "$path"  : "ia"
+                },
+                "Kansas": {
+                    "server" : true,
+                    "osmId"  : "relation/161644",
+                    "$path"  : "ks"
+                },
+                "Kentucky": {
+                    "server" : true,
+                    "osmId"  : "relation/161655",
+                    "$path"  : "ky"
+                },
+                "Louisiana": {
+                    "server" : true,
+                    "osmId"  : "relation/224922",
+                    "$path"  : "la"
+                },
+                "Maine": {
+                    "server" : true,
+                    "osmId"  : "relation/63512",
+                    "$path"  : "me"
+                },
+                "Maryland": {
+                    "server" : true,
+                    "osmId"  : "relation/162112",
+                    "$path"  : "md"
+                },
+                "Massachusetts": {
+                    "server" : true,
+                    "osmId"  : "relation/61315",
+                    "$path"  : "ma"
+                },
+                "Michigan": {
+                    "server" : true,
+                    "osmId"  : "relation/165789",
+                    "$path"  : "mi"
+                },
+                "Minnesota": {
+                    "server" : true,
+                    "osmId"  : "relation/165471",
+                    "$path"  : "mn"
+                },
+                "Mississippi": {
+                    "server" : true,
+                    "osmId"  : "relation/161943",
+                    "$path"  : "ms"
+                },
+                "Missouri": {
+                    "server" : true,
+                    "osmId"  : "relation/161638",
+                    "$path"  : "mo"
+                },
+                "Montana": {
+                    "server" : true,
+                    "osmId"  : "relation/162115",
+                    "$path"  : "mt"
+                },
+                "Nebraska": {
+                    "server" : true,
+                    "osmId"  : "relation/161648",
+                    "$path"  : "ne"
+                },
+                "Nevada": {
+                    "server" : true,
+                    "osmId"  : "relation/165473",
+                    "$path"  : "nv"
+                },
+                "New Hampshire": {
+                    "server" : true,
+                    "osmId"  : "relation/67213",
+                    "$path"  : "nh"
+                },
+                "New Jersey": {
+                    "server" : true,
+                    "osmId"  : "relation/224951",
+                    "$path"  : "nj"
+                },
+                "New Mexico": {
+                    "server" : true,
+                    "osmId"  : "relation/162014",
+                    "$path"  : "nm"
+                },
+                "New York": {
+                    "server" : true,
+                    "osmId"  : "relation/61320",
+                    "$path"  : "ny"
+                },
+                "North Carolina": {
+                    "server" : true,
+                    "osmId"  : "relation/224045",
+                    "$path"  : "nc"
+                },
+                "North Dakota": {
+                    "server" : true,
+                    "osmId"  : "relation/161653",
+                    "$path"  : "nd"
+                },
+                "Ohio": {
+                    "server" : true,
+                    "osmId"  : "relation/162061",
+                    "$path"  : "oh"
+                },
+                "Oklahoma": {
+                    "server" : true,
+                    "osmId"  : "relation/161645",
+                    "$path"  : "ok"
+                },
+                "Oregon": {
+                    "server" : true,
+                    "osmId"  : "relation/165476",
+                    "$path"  : "or"
+                },
+                "Pennsylvania": {
+                    "server" : true,
+                    "osmId"  : "relation/162109",
+                    "$path"  : "pa"
+                },
+                "Rhode Island": {
+                    "server" : true,
+                    "osmId"  : "relation/392915",
+                    "$path"  : "ri"
+                },
+                "South Carolina": {
+                    "server" : true,
+                    "osmId"  : "relation/224040",
+                    "$path"  : "sc"
+                },
+                "South Dakota": {
+                    "server" : true,
+                    "osmId"  : "relation/161652",
+                    "$path"  : "sd"
+                },
+                "Tennessee": {
+                    "server" : true,
+                    "osmId"  : "relation/161838",
+                    "$path"  : "tn"
+                },
+                "Texas": {
+                    "server" : true,
+                    "osmId"  : "relation/114690",
+                    "$path"  : "tx"
+                },
+                "Utah": {
+                    "server" : true,
+                    "osmId"  : "relation/161993",
+                    "$path"  : "ut"
+                },
+                "Vermont": {
+                    "server" : true,
+                    "osmId"  : "relation/60759",
+                    "$path"  : "vt"
+                },
+                "Virginia": {
+                    "server" : true,
+                    "osmId"  : "relation/224042",
+                    "$path"  : "va"
+                },
+                "Washington": {
+                    "server" : true,
+                    "osmId"  : "relation/165479",
+                    "$path"  : "wa"
+                },
+                "West Virginia": {
+                    "server" : true,
+                    "osmId"  : "relation/162068",
+                    "$path"  : "wv"
+                },
+                "Wisconsin": {
+                    "server" : true,
+                    "osmId"  : "relation/165466",
+                    "$path"  : "wi"
+                },
+                "Wyoming": {
+                    "server" : true,
+                    "osmId"  : "relation/161991",
+                    "$path"  : "wy"
+                },
+                "District of Columbia": {
+                    "server" : true,
+                    "osmId"  : "relation/162069",
+                    "$path"  : "dc"
+                }
+            }
+        },
+        "European Union": {
+            "$port"    : 5200,
+            "$path"    : "/",
+            "profile"  : "eu",
+            "children" : {
+                "Germany": {
+                    "server" : true,
+                    "osmId"  : "relation/51477",
+                    "$path"  : "de"
+                },
+                "Czechia": {
+                    "server" : true,
+                    "osmId"  : "relation/51684",
+                    "$path"  : "cz"
+                },
+                "Romania": {
+                    "server" : true,
+                    "osmId"  : "relation/90689",
+                    "$path"  : "ro"
+                },
+                "Estonia": {
+                    "server" : true,
+                    "osmId"  : "relation/79510",
+                    "$path"  : "ee"
+                },
+                "Slovakia": {
+                    "server" : true,
+                    "osmId"  : "relation/14296",
+                    "$path"  : "sk"
+                },
+                "Netherlands": {
+                    "server" : true,
+                    "osmId"  : "relation/2323309",
+                    "$path"  : "nl"
+                },
+                "Croatia": {
+                    "server" : true,
+                    "osmId"  : "relation/214885",
+                    "$path"  : "hr"
+                },
+                "Luxembourg": {
+                    "server" : true,
+                    "osmId"  : "relation/2171347",
+                    "$path"  : "lu"
+                },
+                "Hungary": {
+                    "server" : true,
+                    "osmId"  : "relation/21335",
+                    "$path"  : "hu"
+                },
+                "Latvia": {
+                    "server" : true,
+                    "osmId"  : "relation/72594",
+                    "$path"  : "lv"
+                },
+                "Poland": {
+                    "server" : true,
+                    "osmId"  : "relation/49715",
+                    "$path"  : "pl"
+                },
+                "Greece": {
+                    "server" : true,
+                    "osmId"  : "relation/192307",
+                    "$path"  : "gr"
+                },
+                "Lithuania": {
+                    "server" : true,
+                    "osmId"  : "relation/72596",
+                    "$path"  : "lt"
+                },
+                "Portugal": {
+                    "server" : true,
+                    "osmId"  : "relation/295480",
+                    "$path"  : "pt"
+                },
+                "Sweden": {
+                    "server" : true,
+                    "osmId"  : "relation/52822",
+                    "$path"  : "se"
+                },
+                "Spain": {
+                    "server" : true,
+                    "osmId"  : "relation/1311341",
+                    "$path"  : "es"
+                },
+                "Denmark": {
+                    "server" : true,
+                    "osmId"  : "relation/50046",
+                    "$path"  : "dk"
+                },
+                "Bulgaria": {
+                    "server" : true,
+                    "osmId"  : "relation/186382",
+                    "$path"  : "bg"
+                },
+                "Austria": {
+                    "server" : true,
+                    "osmId"  : "relation/16239",
+                    "$path"  : "at"
+                },
+                "Italy": {
+                    "server" : true,
+                    "osmId"  : "relation/365331",
+                    "$path"  : "it"
+                },
+                "Ireland": {
+                    "server" : true,
+                    "osmId"  : "relation/62273",
+                    "$path"  : "ie"
+                },
+                "Finland": {
+                    "server" : true,
+                    "osmId"  : "relation/54224",
+                    "$path"  : "fi"
+                },
+                "Cyprus": {
+                    "server" : true,
+                    "osmId"  : "relation/307787",
+                    "$path"  : "cy"
+                },
+                "Belgium": {
+                    "server" : true,
+                    "osmId"  : "relation/52411",
+                    "$path"  : "be"
+                },
+                "France": {
+                    "server" : true,
+                    "osmId"  : "relation/2202162",
+                    "$path"  : "fr"
+                },
+                "Slovenia": {
+                    "server" : true,
+                    "osmId"  : "relation/218657",
+                    "$path"  : "si"
+                },
+                "Malta": {
+                    "server" : true,
+                    "osmId"  : "relation/365307",
+                    "$path"  : "mt"
+                }
+            }
+        }
+    }
+}

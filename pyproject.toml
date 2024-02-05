@@ -31,7 +31,8 @@ dependencies = [
   "osm2geojson",
   "tabulate",
   "scikit-image",
-  "pillow"
+  "pillow",
+  "jinja2"
 ]
 
 [project.optional-dependencies]
@@ -47,10 +48,11 @@ dev = [
 "Bug Tracker" = "https://github.com/irtlab/lost/issues"
 
 [project.scripts]
-lost-server   = "lost.server:cli"
-lost-resolver = "lost.resolver.cli:main"
-lost-seeker   = "lost.seeker:cli"
-lost-publisher   = "lost.publisher:cli"
+lost-model     = "lost.model:cli"
+lost-server    = "lost.server:cli"
+lost-resolver  = "lost.resolver.cli:main"
+lost-seeker    = "lost.seeker:cli"
+lost-publisher = "lost.publisher:cli"
 
 [tool.setuptools]
 packages = ["lost"]
