@@ -1,4 +1,6 @@
 version: "3.8"
+name: lost
+
 services:
   lost-db-resolver:
     container_name: lost-db-resolver
@@ -8,7 +10,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/resolver/data:/var/lib/postgresql/data
+      - db-resolver:/var/lib/postgresql/data
       - /run/postgresql/resolver:/run/postgresql
 
   lost-db-root:
@@ -19,7 +21,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/root/data:/var/lib/postgresql/data
+      - db-root:/var/lib/postgresql/data
       - /run/postgresql/server/root:/run/postgresql
 
   lost-server-root:
@@ -47,7 +49,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/data:/var/lib/postgresql/data
+      - db-us:/var/lib/postgresql/data
       - /run/postgresql/server/us:/run/postgresql
 
   lost-server-us:
@@ -77,7 +79,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/al/data:/var/lib/postgresql/data
+      - db-us-al:/var/lib/postgresql/data
       - /run/postgresql/server/us/al:/run/postgresql
 
   lost-server-us-al:
@@ -106,7 +108,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ak/data:/var/lib/postgresql/data
+      - db-us-ak:/var/lib/postgresql/data
       - /run/postgresql/server/us/ak:/run/postgresql
 
   lost-server-us-ak:
@@ -135,7 +137,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/az/data:/var/lib/postgresql/data
+      - db-us-az:/var/lib/postgresql/data
       - /run/postgresql/server/us/az:/run/postgresql
 
   lost-server-us-az:
@@ -164,7 +166,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ar/data:/var/lib/postgresql/data
+      - db-us-ar:/var/lib/postgresql/data
       - /run/postgresql/server/us/ar:/run/postgresql
 
   lost-server-us-ar:
@@ -193,7 +195,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ca/data:/var/lib/postgresql/data
+      - db-us-ca:/var/lib/postgresql/data
       - /run/postgresql/server/us/ca:/run/postgresql
 
   lost-server-us-ca:
@@ -222,7 +224,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/co/data:/var/lib/postgresql/data
+      - db-us-co:/var/lib/postgresql/data
       - /run/postgresql/server/us/co:/run/postgresql
 
   lost-server-us-co:
@@ -251,7 +253,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ct/data:/var/lib/postgresql/data
+      - db-us-ct:/var/lib/postgresql/data
       - /run/postgresql/server/us/ct:/run/postgresql
 
   lost-server-us-ct:
@@ -280,7 +282,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/de/data:/var/lib/postgresql/data
+      - db-us-de:/var/lib/postgresql/data
       - /run/postgresql/server/us/de:/run/postgresql
 
   lost-server-us-de:
@@ -309,7 +311,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/fl/data:/var/lib/postgresql/data
+      - db-us-fl:/var/lib/postgresql/data
       - /run/postgresql/server/us/fl:/run/postgresql
 
   lost-server-us-fl:
@@ -338,7 +340,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ga/data:/var/lib/postgresql/data
+      - db-us-ga:/var/lib/postgresql/data
       - /run/postgresql/server/us/ga:/run/postgresql
 
   lost-server-us-ga:
@@ -367,7 +369,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/hi/data:/var/lib/postgresql/data
+      - db-us-hi:/var/lib/postgresql/data
       - /run/postgresql/server/us/hi:/run/postgresql
 
   lost-server-us-hi:
@@ -396,7 +398,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/id/data:/var/lib/postgresql/data
+      - db-us-id:/var/lib/postgresql/data
       - /run/postgresql/server/us/id:/run/postgresql
 
   lost-server-us-id:
@@ -425,7 +427,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/il/data:/var/lib/postgresql/data
+      - db-us-il:/var/lib/postgresql/data
       - /run/postgresql/server/us/il:/run/postgresql
 
   lost-server-us-il:
@@ -454,7 +456,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/in/data:/var/lib/postgresql/data
+      - db-us-in:/var/lib/postgresql/data
       - /run/postgresql/server/us/in:/run/postgresql
 
   lost-server-us-in:
@@ -483,7 +485,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ia/data:/var/lib/postgresql/data
+      - db-us-ia:/var/lib/postgresql/data
       - /run/postgresql/server/us/ia:/run/postgresql
 
   lost-server-us-ia:
@@ -512,7 +514,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ks/data:/var/lib/postgresql/data
+      - db-us-ks:/var/lib/postgresql/data
       - /run/postgresql/server/us/ks:/run/postgresql
 
   lost-server-us-ks:
@@ -541,7 +543,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ky/data:/var/lib/postgresql/data
+      - db-us-ky:/var/lib/postgresql/data
       - /run/postgresql/server/us/ky:/run/postgresql
 
   lost-server-us-ky:
@@ -570,7 +572,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/la/data:/var/lib/postgresql/data
+      - db-us-la:/var/lib/postgresql/data
       - /run/postgresql/server/us/la:/run/postgresql
 
   lost-server-us-la:
@@ -599,7 +601,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/me/data:/var/lib/postgresql/data
+      - db-us-me:/var/lib/postgresql/data
       - /run/postgresql/server/us/me:/run/postgresql
 
   lost-server-us-me:
@@ -628,7 +630,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/md/data:/var/lib/postgresql/data
+      - db-us-md:/var/lib/postgresql/data
       - /run/postgresql/server/us/md:/run/postgresql
 
   lost-server-us-md:
@@ -657,7 +659,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ma/data:/var/lib/postgresql/data
+      - db-us-ma:/var/lib/postgresql/data
       - /run/postgresql/server/us/ma:/run/postgresql
 
   lost-server-us-ma:
@@ -686,7 +688,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/mi/data:/var/lib/postgresql/data
+      - db-us-mi:/var/lib/postgresql/data
       - /run/postgresql/server/us/mi:/run/postgresql
 
   lost-server-us-mi:
@@ -715,7 +717,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/mn/data:/var/lib/postgresql/data
+      - db-us-mn:/var/lib/postgresql/data
       - /run/postgresql/server/us/mn:/run/postgresql
 
   lost-server-us-mn:
@@ -744,7 +746,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ms/data:/var/lib/postgresql/data
+      - db-us-ms:/var/lib/postgresql/data
       - /run/postgresql/server/us/ms:/run/postgresql
 
   lost-server-us-ms:
@@ -773,7 +775,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/mo/data:/var/lib/postgresql/data
+      - db-us-mo:/var/lib/postgresql/data
       - /run/postgresql/server/us/mo:/run/postgresql
 
   lost-server-us-mo:
@@ -802,7 +804,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/mt/data:/var/lib/postgresql/data
+      - db-us-mt:/var/lib/postgresql/data
       - /run/postgresql/server/us/mt:/run/postgresql
 
   lost-server-us-mt:
@@ -831,7 +833,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ne/data:/var/lib/postgresql/data
+      - db-us-ne:/var/lib/postgresql/data
       - /run/postgresql/server/us/ne:/run/postgresql
 
   lost-server-us-ne:
@@ -860,7 +862,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nv/data:/var/lib/postgresql/data
+      - db-us-nv:/var/lib/postgresql/data
       - /run/postgresql/server/us/nv:/run/postgresql
 
   lost-server-us-nv:
@@ -889,7 +891,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nh/data:/var/lib/postgresql/data
+      - db-us-nh:/var/lib/postgresql/data
       - /run/postgresql/server/us/nh:/run/postgresql
 
   lost-server-us-nh:
@@ -918,7 +920,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nj/data:/var/lib/postgresql/data
+      - db-us-nj:/var/lib/postgresql/data
       - /run/postgresql/server/us/nj:/run/postgresql
 
   lost-server-us-nj:
@@ -947,7 +949,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nm/data:/var/lib/postgresql/data
+      - db-us-nm:/var/lib/postgresql/data
       - /run/postgresql/server/us/nm:/run/postgresql
 
   lost-server-us-nm:
@@ -976,7 +978,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ny/data:/var/lib/postgresql/data
+      - db-us-ny:/var/lib/postgresql/data
       - /run/postgresql/server/us/ny:/run/postgresql
 
   lost-server-us-ny:
@@ -1005,7 +1007,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nc/data:/var/lib/postgresql/data
+      - db-us-nc:/var/lib/postgresql/data
       - /run/postgresql/server/us/nc:/run/postgresql
 
   lost-server-us-nc:
@@ -1034,7 +1036,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/nd/data:/var/lib/postgresql/data
+      - db-us-nd:/var/lib/postgresql/data
       - /run/postgresql/server/us/nd:/run/postgresql
 
   lost-server-us-nd:
@@ -1063,7 +1065,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/oh/data:/var/lib/postgresql/data
+      - db-us-oh:/var/lib/postgresql/data
       - /run/postgresql/server/us/oh:/run/postgresql
 
   lost-server-us-oh:
@@ -1092,7 +1094,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ok/data:/var/lib/postgresql/data
+      - db-us-ok:/var/lib/postgresql/data
       - /run/postgresql/server/us/ok:/run/postgresql
 
   lost-server-us-ok:
@@ -1121,7 +1123,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/or/data:/var/lib/postgresql/data
+      - db-us-or:/var/lib/postgresql/data
       - /run/postgresql/server/us/or:/run/postgresql
 
   lost-server-us-or:
@@ -1150,7 +1152,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/pa/data:/var/lib/postgresql/data
+      - db-us-pa:/var/lib/postgresql/data
       - /run/postgresql/server/us/pa:/run/postgresql
 
   lost-server-us-pa:
@@ -1179,7 +1181,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ri/data:/var/lib/postgresql/data
+      - db-us-ri:/var/lib/postgresql/data
       - /run/postgresql/server/us/ri:/run/postgresql
 
   lost-server-us-ri:
@@ -1208,7 +1210,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/sc/data:/var/lib/postgresql/data
+      - db-us-sc:/var/lib/postgresql/data
       - /run/postgresql/server/us/sc:/run/postgresql
 
   lost-server-us-sc:
@@ -1237,7 +1239,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/sd/data:/var/lib/postgresql/data
+      - db-us-sd:/var/lib/postgresql/data
       - /run/postgresql/server/us/sd:/run/postgresql
 
   lost-server-us-sd:
@@ -1266,7 +1268,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/tn/data:/var/lib/postgresql/data
+      - db-us-tn:/var/lib/postgresql/data
       - /run/postgresql/server/us/tn:/run/postgresql
 
   lost-server-us-tn:
@@ -1295,7 +1297,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/tx/data:/var/lib/postgresql/data
+      - db-us-tx:/var/lib/postgresql/data
       - /run/postgresql/server/us/tx:/run/postgresql
 
   lost-server-us-tx:
@@ -1324,7 +1326,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/ut/data:/var/lib/postgresql/data
+      - db-us-ut:/var/lib/postgresql/data
       - /run/postgresql/server/us/ut:/run/postgresql
 
   lost-server-us-ut:
@@ -1353,7 +1355,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/vt/data:/var/lib/postgresql/data
+      - db-us-vt:/var/lib/postgresql/data
       - /run/postgresql/server/us/vt:/run/postgresql
 
   lost-server-us-vt:
@@ -1382,7 +1384,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/va/data:/var/lib/postgresql/data
+      - db-us-va:/var/lib/postgresql/data
       - /run/postgresql/server/us/va:/run/postgresql
 
   lost-server-us-va:
@@ -1411,7 +1413,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/wa/data:/var/lib/postgresql/data
+      - db-us-wa:/var/lib/postgresql/data
       - /run/postgresql/server/us/wa:/run/postgresql
 
   lost-server-us-wa:
@@ -1440,7 +1442,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/wv/data:/var/lib/postgresql/data
+      - db-us-wv:/var/lib/postgresql/data
       - /run/postgresql/server/us/wv:/run/postgresql
 
   lost-server-us-wv:
@@ -1469,7 +1471,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/wi/data:/var/lib/postgresql/data
+      - db-us-wi:/var/lib/postgresql/data
       - /run/postgresql/server/us/wi:/run/postgresql
 
   lost-server-us-wi:
@@ -1498,7 +1500,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/wy/data:/var/lib/postgresql/data
+      - db-us-wy:/var/lib/postgresql/data
       - /run/postgresql/server/us/wy:/run/postgresql
 
   lost-server-us-wy:
@@ -1527,7 +1529,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/us/dc/data:/var/lib/postgresql/data
+      - db-us-dc:/var/lib/postgresql/data
       - /run/postgresql/server/us/dc:/run/postgresql
 
   lost-server-us-dc:
@@ -1556,7 +1558,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/de/data:/var/lib/postgresql/data
+      - db-de:/var/lib/postgresql/data
       - /run/postgresql/server/de:/run/postgresql
 
   lost-server-de:
@@ -1585,7 +1587,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/cz/data:/var/lib/postgresql/data
+      - db-cz:/var/lib/postgresql/data
       - /run/postgresql/server/cz:/run/postgresql
 
   lost-server-cz:
@@ -1614,7 +1616,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/ro/data:/var/lib/postgresql/data
+      - db-ro:/var/lib/postgresql/data
       - /run/postgresql/server/ro:/run/postgresql
 
   lost-server-ro:
@@ -1643,7 +1645,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/ee/data:/var/lib/postgresql/data
+      - db-ee:/var/lib/postgresql/data
       - /run/postgresql/server/ee:/run/postgresql
 
   lost-server-ee:
@@ -1672,7 +1674,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/sk/data:/var/lib/postgresql/data
+      - db-sk:/var/lib/postgresql/data
       - /run/postgresql/server/sk:/run/postgresql
 
   lost-server-sk:
@@ -1701,7 +1703,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/nl/data:/var/lib/postgresql/data
+      - db-nl:/var/lib/postgresql/data
       - /run/postgresql/server/nl:/run/postgresql
 
   lost-server-nl:
@@ -1730,7 +1732,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/hr/data:/var/lib/postgresql/data
+      - db-hr:/var/lib/postgresql/data
       - /run/postgresql/server/hr:/run/postgresql
 
   lost-server-hr:
@@ -1759,7 +1761,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/lu/data:/var/lib/postgresql/data
+      - db-lu:/var/lib/postgresql/data
       - /run/postgresql/server/lu:/run/postgresql
 
   lost-server-lu:
@@ -1788,7 +1790,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/hu/data:/var/lib/postgresql/data
+      - db-hu:/var/lib/postgresql/data
       - /run/postgresql/server/hu:/run/postgresql
 
   lost-server-hu:
@@ -1817,7 +1819,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/lv/data:/var/lib/postgresql/data
+      - db-lv:/var/lib/postgresql/data
       - /run/postgresql/server/lv:/run/postgresql
 
   lost-server-lv:
@@ -1846,7 +1848,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/pl/data:/var/lib/postgresql/data
+      - db-pl:/var/lib/postgresql/data
       - /run/postgresql/server/pl:/run/postgresql
 
   lost-server-pl:
@@ -1875,7 +1877,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/gr/data:/var/lib/postgresql/data
+      - db-gr:/var/lib/postgresql/data
       - /run/postgresql/server/gr:/run/postgresql
 
   lost-server-gr:
@@ -1904,7 +1906,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/lt/data:/var/lib/postgresql/data
+      - db-lt:/var/lib/postgresql/data
       - /run/postgresql/server/lt:/run/postgresql
 
   lost-server-lt:
@@ -1933,7 +1935,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/pt/data:/var/lib/postgresql/data
+      - db-pt:/var/lib/postgresql/data
       - /run/postgresql/server/pt:/run/postgresql
 
   lost-server-pt:
@@ -1962,7 +1964,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/se/data:/var/lib/postgresql/data
+      - db-se:/var/lib/postgresql/data
       - /run/postgresql/server/se:/run/postgresql
 
   lost-server-se:
@@ -1991,7 +1993,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/es/data:/var/lib/postgresql/data
+      - db-es:/var/lib/postgresql/data
       - /run/postgresql/server/es:/run/postgresql
 
   lost-server-es:
@@ -2020,7 +2022,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/dk/data:/var/lib/postgresql/data
+      - db-dk:/var/lib/postgresql/data
       - /run/postgresql/server/dk:/run/postgresql
 
   lost-server-dk:
@@ -2049,7 +2051,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/bg/data:/var/lib/postgresql/data
+      - db-bg:/var/lib/postgresql/data
       - /run/postgresql/server/bg:/run/postgresql
 
   lost-server-bg:
@@ -2078,7 +2080,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/at/data:/var/lib/postgresql/data
+      - db-at:/var/lib/postgresql/data
       - /run/postgresql/server/at:/run/postgresql
 
   lost-server-at:
@@ -2107,7 +2109,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/it/data:/var/lib/postgresql/data
+      - db-it:/var/lib/postgresql/data
       - /run/postgresql/server/it:/run/postgresql
 
   lost-server-it:
@@ -2136,7 +2138,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/ie/data:/var/lib/postgresql/data
+      - db-ie:/var/lib/postgresql/data
       - /run/postgresql/server/ie:/run/postgresql
 
   lost-server-ie:
@@ -2165,7 +2167,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/fi/data:/var/lib/postgresql/data
+      - db-fi:/var/lib/postgresql/data
       - /run/postgresql/server/fi:/run/postgresql
 
   lost-server-fi:
@@ -2194,7 +2196,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/cy/data:/var/lib/postgresql/data
+      - db-cy:/var/lib/postgresql/data
       - /run/postgresql/server/cy:/run/postgresql
 
   lost-server-cy:
@@ -2223,7 +2225,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/be/data:/var/lib/postgresql/data
+      - db-be:/var/lib/postgresql/data
       - /run/postgresql/server/be:/run/postgresql
 
   lost-server-be:
@@ -2252,7 +2254,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/fr/data:/var/lib/postgresql/data
+      - db-fr:/var/lib/postgresql/data
       - /run/postgresql/server/fr:/run/postgresql
 
   lost-server-fr:
@@ -2281,7 +2283,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/si/data:/var/lib/postgresql/data
+      - db-si:/var/lib/postgresql/data
       - /run/postgresql/server/si:/run/postgresql
 
   lost-server-si:
@@ -2310,7 +2312,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/mt/data:/var/lib/postgresql/data
+      - db-mt:/var/lib/postgresql/data
       - /run/postgresql/server/mt:/run/postgresql
 
   lost-server-mt:
@@ -2330,3 +2332,247 @@ services:
     depends_on:
       - lost-db-mt
 
+volumes:
+  db-resolver:
+    labels:
+      role: resolver
+  db-root:
+    labels:
+      role: server
+  db-us:
+    labels:
+      role: server
+  db-us-al:
+    labels:
+      role: server
+  db-us-ak:
+    labels:
+      role: server
+  db-us-az:
+    labels:
+      role: server
+  db-us-ar:
+    labels:
+      role: server
+  db-us-ca:
+    labels:
+      role: server
+  db-us-co:
+    labels:
+      role: server
+  db-us-ct:
+    labels:
+      role: server
+  db-us-de:
+    labels:
+      role: server
+  db-us-fl:
+    labels:
+      role: server
+  db-us-ga:
+    labels:
+      role: server
+  db-us-hi:
+    labels:
+      role: server
+  db-us-id:
+    labels:
+      role: server
+  db-us-il:
+    labels:
+      role: server
+  db-us-in:
+    labels:
+      role: server
+  db-us-ia:
+    labels:
+      role: server
+  db-us-ks:
+    labels:
+      role: server
+  db-us-ky:
+    labels:
+      role: server
+  db-us-la:
+    labels:
+      role: server
+  db-us-me:
+    labels:
+      role: server
+  db-us-md:
+    labels:
+      role: server
+  db-us-ma:
+    labels:
+      role: server
+  db-us-mi:
+    labels:
+      role: server
+  db-us-mn:
+    labels:
+      role: server
+  db-us-ms:
+    labels:
+      role: server
+  db-us-mo:
+    labels:
+      role: server
+  db-us-mt:
+    labels:
+      role: server
+  db-us-ne:
+    labels:
+      role: server
+  db-us-nv:
+    labels:
+      role: server
+  db-us-nh:
+    labels:
+      role: server
+  db-us-nj:
+    labels:
+      role: server
+  db-us-nm:
+    labels:
+      role: server
+  db-us-ny:
+    labels:
+      role: server
+  db-us-nc:
+    labels:
+      role: server
+  db-us-nd:
+    labels:
+      role: server
+  db-us-oh:
+    labels:
+      role: server
+  db-us-ok:
+    labels:
+      role: server
+  db-us-or:
+    labels:
+      role: server
+  db-us-pa:
+    labels:
+      role: server
+  db-us-ri:
+    labels:
+      role: server
+  db-us-sc:
+    labels:
+      role: server
+  db-us-sd:
+    labels:
+      role: server
+  db-us-tn:
+    labels:
+      role: server
+  db-us-tx:
+    labels:
+      role: server
+  db-us-ut:
+    labels:
+      role: server
+  db-us-vt:
+    labels:
+      role: server
+  db-us-va:
+    labels:
+      role: server
+  db-us-wa:
+    labels:
+      role: server
+  db-us-wv:
+    labels:
+      role: server
+  db-us-wi:
+    labels:
+      role: server
+  db-us-wy:
+    labels:
+      role: server
+  db-us-dc:
+    labels:
+      role: server
+  db-de:
+    labels:
+      role: server
+  db-cz:
+    labels:
+      role: server
+  db-ro:
+    labels:
+      role: server
+  db-ee:
+    labels:
+      role: server
+  db-sk:
+    labels:
+      role: server
+  db-nl:
+    labels:
+      role: server
+  db-hr:
+    labels:
+      role: server
+  db-lu:
+    labels:
+      role: server
+  db-hu:
+    labels:
+      role: server
+  db-lv:
+    labels:
+      role: server
+  db-pl:
+    labels:
+      role: server
+  db-gr:
+    labels:
+      role: server
+  db-lt:
+    labels:
+      role: server
+  db-pt:
+    labels:
+      role: server
+  db-se:
+    labels:
+      role: server
+  db-es:
+    labels:
+      role: server
+  db-dk:
+    labels:
+      role: server
+  db-bg:
+    labels:
+      role: server
+  db-at:
+    labels:
+      role: server
+  db-it:
+    labels:
+      role: server
+  db-ie:
+    labels:
+      role: server
+  db-fi:
+    labels:
+      role: server
+  db-cy:
+    labels:
+      role: server
+  db-be:
+    labels:
+      role: server
+  db-fr:
+    labels:
+      role: server
+  db-si:
+    labels:
+      role: server
+  db-mt:
+    labels:
+      role: server

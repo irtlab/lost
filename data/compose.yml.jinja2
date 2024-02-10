@@ -1,4 +1,6 @@
 version: "3.8"
+name: lost
+
 services:
   lost-db-resolver:
     container_name: lost-db-resolver
@@ -8,7 +10,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/resolver/data:/var/lib/postgresql/data
+      - db-resolver:/var/lib/postgresql/data
       - /run/postgresql/resolver:/run/postgresql
 
 {% for name, node, attrs in servers() %}
@@ -24,7 +26,7 @@ services:
     environment:
       POSTGRES_PASSWORD: mLFC3YRH
     volumes:
-      - ${PWD}/db/server/{{ attrs['$path'] }}/data:/var/lib/postgresql/data
+      - db-{{ id }}:/var/lib/postgresql/data
       - /run/postgresql/server/{{ attrs['$path'] }}:/run/postgresql
 
   lost-server-{{ id }}:
@@ -52,4 +54,13 @@ services:
     depends_on:
       - lost-db-{{ id }}
 
+{% endfor %}
+volumes:
+  db-resolver:
+    labels:
+      role: resolver
+{% for _, _, attrs in servers() %}
+  db-{{ attrs['$path'].replace('/', '-')  }}:
+    labels:
+      role: server
 {% endfor %}
