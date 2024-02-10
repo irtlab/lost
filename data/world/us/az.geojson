@@ -47,7 +47,7 @@
                     "ref": "AZ",
                     "ref:USCG": "AZ",
                     "ref:USPS": "AZ",
-                    "ref:fips": "03",
+                    "ref:fips": "04",
                     "short_name": "Ariz.",
                     "source:name:br": "ofis publik ar brezhoneg",
                     "source:short_name": "Associated Press",
@@ -55,10 +55,10 @@
                     "wikidata": "Q816",
                     "wikipedia": "en:Arizona"
                 },
-                "timestamp": "2024-01-11T19:41:25Z",
-                "user": "revent",
-                "uid": 1887977,
-                "version": 123
+                "timestamp": "2024-02-09T14:41:19Z",
+                "user": "Anastasiia Sakharova",
+                "uid": 18344742,
+                "version": 124
             },
             "geometry": {
                 "type": "MultiPolygon",
