@@ -40,6 +40,9 @@ services:
     environment:
       PORT: {{ attrs['$port'] }}
       SERVER_ID: "lost-server-{{ id }}"
+{% if attrs['redirect'] %}
+      REDIRECT: true
+{% endif %}
 {% if node['loadShapes'] %}
       LOAD_SHAPES: "{{ node['loadShapes'] }}"
 {% endif %}

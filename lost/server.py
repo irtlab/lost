@@ -1,6 +1,5 @@
 from __future__ import annotations
 import sys
-import os
 import glob
 import click
 import lxml.objectify
@@ -37,10 +36,11 @@ class LoSTServer(ABC):
 
     Instantiate GeographicLoSTServer or CivicLostServer instead.
     '''
-    def __init__(self, server_id, db: ConnectionPool, table):
+    def __init__(self, server_id, db: ConnectionPool, table, redirect=False):
         self.server_id = server_id
         self.db = db
         self.table = table
+        self.redirect = redirect
 
     @abstractmethod
     def check_authority(self, req: lxml.objectify.ObjectifiedElement):
@@ -76,8 +76,8 @@ def serviceBoundary(value: str, gml_ns=GML_NAMESPACE, profile="geodetic-2d"):
 
 
 class GeographicLoSTServer(LoSTServer):
-    def __init__(self, server_id, db: ConnectionPool, table, authoritative):
-        super().__init__(server_id, db, table)
+    def __init__(self, server_id, db: ConnectionPool, table, authoritative, redirect):
+        super().__init__(server_id, db, table, redirect=redirect)
         self.server_id = server_id
         self.db = db
         self.table = table
@@ -299,15 +299,16 @@ db.cli(cli)
 @click.option('--civic-table', '-c', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
 @click.option('--server-id', '-i', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
 @click.option('--authoritative', '-a', envvar='AUTHORITATIVE', help='URI of the shape for which the server is authoritative')
-def start(ip, port, geo_table, civic_table, server_id, authoritative):
+@click.option('--redirect', '-r', is_flag=True, envvar='REDIRECT', help='Send redirects instead of proxying client requests')
+def start(ip, port, geo_table, civic_table, server_id, authoritative, redirect):
     global lost_server
     
     print("Instantiating a LoST server for the 'geodetic-2d' profile")
-    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, db.pool, geo_table, authoritative)
+    lost_server['geodetic-2d'] = GeographicLoSTServer(server_id, db.pool, geo_table, authoritative, redirect=redirect)
 
     if civic_table is not None:
         print("Instantiating a LoST server for the 'civic' profile")
-        lost_server['civic'] = CivicLoSTServer(server_id, db.pool, civic_table)
+        lost_server['civic'] = CivicLoSTServer(server_id, db.pool, civic_table, redirect=redirect)
 
     app.config['server-id'] = server_id
     app.config['db'] = db.pool

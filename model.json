@@ -2,6 +2,7 @@
     "$port"      : 5000,
     "server"     : true,
     "$path"      : "root",
+    "redirect"   : true,
     "loadShapes" : "data/world/*.geojson",
     "children"   : {
         "United States": {
@@ -10,6 +11,7 @@
             "osmId"      : "relation/148838",
             "$port"      : 5100,
             "profile"    : "us",
+            "redirect"   : false,
             "loadShapes" : "data/world/us/*.geojson",
             "children"   : {
                 "Alabama" : {
@@ -273,6 +275,7 @@
             "$port"    : 5200,
             "$path"    : "/",
             "profile"  : "eu",
+            "redirect" : false,
             "children" : {
                 "Germany": {
                     "server" : true,
