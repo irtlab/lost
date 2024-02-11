@@ -34,8 +34,6 @@ services:
       SERVER_ID: "lost-server-root"
       LOAD_SHAPES: "data/world/*.geojson"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5000:5000"
     volumes:
       - /run/postgresql/server/root:/run/postgresql
     depends_on:
@@ -65,8 +63,6 @@ services:
       LOAD_SHAPES: "data/world/us/*.geojson"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/148838"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5100:5100"
     volumes:
       - /run/postgresql/server/us:/run/postgresql
     depends_on:
@@ -95,8 +91,6 @@ services:
       SERVER_ID: "lost-server-us-al"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161950"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5101:5101"
     volumes:
       - /run/postgresql/server/us/al:/run/postgresql
     depends_on:
@@ -125,8 +119,6 @@ services:
       SERVER_ID: "lost-server-us-ak"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/1116270"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5102:5102"
     volumes:
       - /run/postgresql/server/us/ak:/run/postgresql
     depends_on:
@@ -155,8 +147,6 @@ services:
       SERVER_ID: "lost-server-us-az"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162018"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5103:5103"
     volumes:
       - /run/postgresql/server/us/az:/run/postgresql
     depends_on:
@@ -185,8 +175,6 @@ services:
       SERVER_ID: "lost-server-us-ar"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161646"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5104:5104"
     volumes:
       - /run/postgresql/server/us/ar:/run/postgresql
     depends_on:
@@ -215,8 +203,6 @@ services:
       SERVER_ID: "lost-server-us-ca"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165475"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5105:5105"
     volumes:
       - /run/postgresql/server/us/ca:/run/postgresql
     depends_on:
@@ -245,8 +231,6 @@ services:
       SERVER_ID: "lost-server-us-co"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161961"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5106:5106"
     volumes:
       - /run/postgresql/server/us/co:/run/postgresql
     depends_on:
@@ -275,8 +259,6 @@ services:
       SERVER_ID: "lost-server-us-ct"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165794"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5107:5107"
     volumes:
       - /run/postgresql/server/us/ct:/run/postgresql
     depends_on:
@@ -305,8 +287,6 @@ services:
       SERVER_ID: "lost-server-us-de"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162110"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5108:5108"
     volumes:
       - /run/postgresql/server/us/de:/run/postgresql
     depends_on:
@@ -335,8 +315,6 @@ services:
       SERVER_ID: "lost-server-us-fl"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162050"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5109:5109"
     volumes:
       - /run/postgresql/server/us/fl:/run/postgresql
     depends_on:
@@ -365,8 +343,6 @@ services:
       SERVER_ID: "lost-server-us-ga"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161957"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5110:5110"
     volumes:
       - /run/postgresql/server/us/ga:/run/postgresql
     depends_on:
@@ -395,8 +371,6 @@ services:
       SERVER_ID: "lost-server-us-hi"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/166563"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5111:5111"
     volumes:
       - /run/postgresql/server/us/hi:/run/postgresql
     depends_on:
@@ -425,8 +399,6 @@ services:
       SERVER_ID: "lost-server-us-id"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162116"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5112:5112"
     volumes:
       - /run/postgresql/server/us/id:/run/postgresql
     depends_on:
@@ -455,8 +427,6 @@ services:
       SERVER_ID: "lost-server-us-il"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/122586"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5113:5113"
     volumes:
       - /run/postgresql/server/us/il:/run/postgresql
     depends_on:
@@ -485,8 +455,6 @@ services:
       SERVER_ID: "lost-server-us-in"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161816"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5114:5114"
     volumes:
       - /run/postgresql/server/us/in:/run/postgresql
     depends_on:
@@ -515,8 +483,6 @@ services:
       SERVER_ID: "lost-server-us-ia"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161650"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5115:5115"
     volumes:
       - /run/postgresql/server/us/ia:/run/postgresql
     depends_on:
@@ -545,8 +511,6 @@ services:
       SERVER_ID: "lost-server-us-ks"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161644"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5116:5116"
     volumes:
       - /run/postgresql/server/us/ks:/run/postgresql
     depends_on:
@@ -575,8 +539,6 @@ services:
       SERVER_ID: "lost-server-us-ky"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161655"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5117:5117"
     volumes:
       - /run/postgresql/server/us/ky:/run/postgresql
     depends_on:
@@ -605,8 +567,6 @@ services:
       SERVER_ID: "lost-server-us-la"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/224922"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5118:5118"
     volumes:
       - /run/postgresql/server/us/la:/run/postgresql
     depends_on:
@@ -635,8 +595,6 @@ services:
       SERVER_ID: "lost-server-us-me"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/63512"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5119:5119"
     volumes:
       - /run/postgresql/server/us/me:/run/postgresql
     depends_on:
@@ -665,8 +623,6 @@ services:
       SERVER_ID: "lost-server-us-md"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162112"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5120:5120"
     volumes:
       - /run/postgresql/server/us/md:/run/postgresql
     depends_on:
@@ -695,8 +651,6 @@ services:
       SERVER_ID: "lost-server-us-ma"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/61315"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5121:5121"
     volumes:
       - /run/postgresql/server/us/ma:/run/postgresql
     depends_on:
@@ -725,8 +679,6 @@ services:
       SERVER_ID: "lost-server-us-mi"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165789"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5122:5122"
     volumes:
       - /run/postgresql/server/us/mi:/run/postgresql
     depends_on:
@@ -755,8 +707,6 @@ services:
       SERVER_ID: "lost-server-us-mn"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165471"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5123:5123"
     volumes:
       - /run/postgresql/server/us/mn:/run/postgresql
     depends_on:
@@ -785,8 +735,6 @@ services:
       SERVER_ID: "lost-server-us-ms"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161943"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5124:5124"
     volumes:
       - /run/postgresql/server/us/ms:/run/postgresql
     depends_on:
@@ -815,8 +763,6 @@ services:
       SERVER_ID: "lost-server-us-mo"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161638"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5125:5125"
     volumes:
       - /run/postgresql/server/us/mo:/run/postgresql
     depends_on:
@@ -845,8 +791,6 @@ services:
       SERVER_ID: "lost-server-us-mt"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162115"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5126:5126"
     volumes:
       - /run/postgresql/server/us/mt:/run/postgresql
     depends_on:
@@ -875,8 +819,6 @@ services:
       SERVER_ID: "lost-server-us-ne"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161648"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5127:5127"
     volumes:
       - /run/postgresql/server/us/ne:/run/postgresql
     depends_on:
@@ -905,8 +847,6 @@ services:
       SERVER_ID: "lost-server-us-nv"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165473"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5128:5128"
     volumes:
       - /run/postgresql/server/us/nv:/run/postgresql
     depends_on:
@@ -935,8 +875,6 @@ services:
       SERVER_ID: "lost-server-us-nh"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/67213"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5129:5129"
     volumes:
       - /run/postgresql/server/us/nh:/run/postgresql
     depends_on:
@@ -965,8 +903,6 @@ services:
       SERVER_ID: "lost-server-us-nj"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/224951"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5130:5130"
     volumes:
       - /run/postgresql/server/us/nj:/run/postgresql
     depends_on:
@@ -995,8 +931,6 @@ services:
       SERVER_ID: "lost-server-us-nm"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162014"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5131:5131"
     volumes:
       - /run/postgresql/server/us/nm:/run/postgresql
     depends_on:
@@ -1025,8 +959,6 @@ services:
       SERVER_ID: "lost-server-us-ny"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/61320"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5132:5132"
     volumes:
       - /run/postgresql/server/us/ny:/run/postgresql
     depends_on:
@@ -1055,8 +987,6 @@ services:
       SERVER_ID: "lost-server-us-nc"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/224045"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5133:5133"
     volumes:
       - /run/postgresql/server/us/nc:/run/postgresql
     depends_on:
@@ -1085,8 +1015,6 @@ services:
       SERVER_ID: "lost-server-us-nd"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161653"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5134:5134"
     volumes:
       - /run/postgresql/server/us/nd:/run/postgresql
     depends_on:
@@ -1115,8 +1043,6 @@ services:
       SERVER_ID: "lost-server-us-oh"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162061"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5135:5135"
     volumes:
       - /run/postgresql/server/us/oh:/run/postgresql
     depends_on:
@@ -1145,8 +1071,6 @@ services:
       SERVER_ID: "lost-server-us-ok"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161645"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5136:5136"
     volumes:
       - /run/postgresql/server/us/ok:/run/postgresql
     depends_on:
@@ -1175,8 +1099,6 @@ services:
       SERVER_ID: "lost-server-us-or"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165476"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5137:5137"
     volumes:
       - /run/postgresql/server/us/or:/run/postgresql
     depends_on:
@@ -1205,8 +1127,6 @@ services:
       SERVER_ID: "lost-server-us-pa"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162109"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5138:5138"
     volumes:
       - /run/postgresql/server/us/pa:/run/postgresql
     depends_on:
@@ -1235,8 +1155,6 @@ services:
       SERVER_ID: "lost-server-us-ri"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/392915"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5139:5139"
     volumes:
       - /run/postgresql/server/us/ri:/run/postgresql
     depends_on:
@@ -1265,8 +1183,6 @@ services:
       SERVER_ID: "lost-server-us-sc"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/224040"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5140:5140"
     volumes:
       - /run/postgresql/server/us/sc:/run/postgresql
     depends_on:
@@ -1295,8 +1211,6 @@ services:
       SERVER_ID: "lost-server-us-sd"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161652"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5141:5141"
     volumes:
       - /run/postgresql/server/us/sd:/run/postgresql
     depends_on:
@@ -1325,8 +1239,6 @@ services:
       SERVER_ID: "lost-server-us-tn"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161838"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5142:5142"
     volumes:
       - /run/postgresql/server/us/tn:/run/postgresql
     depends_on:
@@ -1355,8 +1267,6 @@ services:
       SERVER_ID: "lost-server-us-tx"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/114690"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5143:5143"
     volumes:
       - /run/postgresql/server/us/tx:/run/postgresql
     depends_on:
@@ -1385,8 +1295,6 @@ services:
       SERVER_ID: "lost-server-us-ut"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161993"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5144:5144"
     volumes:
       - /run/postgresql/server/us/ut:/run/postgresql
     depends_on:
@@ -1415,8 +1323,6 @@ services:
       SERVER_ID: "lost-server-us-vt"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/60759"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5145:5145"
     volumes:
       - /run/postgresql/server/us/vt:/run/postgresql
     depends_on:
@@ -1445,8 +1351,6 @@ services:
       SERVER_ID: "lost-server-us-va"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/224042"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5146:5146"
     volumes:
       - /run/postgresql/server/us/va:/run/postgresql
     depends_on:
@@ -1475,8 +1379,6 @@ services:
       SERVER_ID: "lost-server-us-wa"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165479"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5147:5147"
     volumes:
       - /run/postgresql/server/us/wa:/run/postgresql
     depends_on:
@@ -1505,8 +1407,6 @@ services:
       SERVER_ID: "lost-server-us-wv"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162068"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5148:5148"
     volumes:
       - /run/postgresql/server/us/wv:/run/postgresql
     depends_on:
@@ -1535,8 +1435,6 @@ services:
       SERVER_ID: "lost-server-us-wi"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/165466"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5149:5149"
     volumes:
       - /run/postgresql/server/us/wi:/run/postgresql
     depends_on:
@@ -1565,8 +1463,6 @@ services:
       SERVER_ID: "lost-server-us-wy"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/161991"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5150:5150"
     volumes:
       - /run/postgresql/server/us/wy:/run/postgresql
     depends_on:
@@ -1595,8 +1491,6 @@ services:
       SERVER_ID: "lost-server-us-dc"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/162069"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5151:5151"
     volumes:
       - /run/postgresql/server/us/dc:/run/postgresql
     depends_on:
@@ -1625,8 +1519,6 @@ services:
       SERVER_ID: "lost-server-de"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/51477"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5201:5201"
     volumes:
       - /run/postgresql/server/de:/run/postgresql
     depends_on:
@@ -1655,8 +1547,6 @@ services:
       SERVER_ID: "lost-server-cz"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/51684"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5202:5202"
     volumes:
       - /run/postgresql/server/cz:/run/postgresql
     depends_on:
@@ -1685,8 +1575,6 @@ services:
       SERVER_ID: "lost-server-ro"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/90689"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5203:5203"
     volumes:
       - /run/postgresql/server/ro:/run/postgresql
     depends_on:
@@ -1715,8 +1603,6 @@ services:
       SERVER_ID: "lost-server-ee"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/79510"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5204:5204"
     volumes:
       - /run/postgresql/server/ee:/run/postgresql
     depends_on:
@@ -1745,8 +1631,6 @@ services:
       SERVER_ID: "lost-server-sk"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/14296"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5205:5205"
     volumes:
       - /run/postgresql/server/sk:/run/postgresql
     depends_on:
@@ -1775,8 +1659,6 @@ services:
       SERVER_ID: "lost-server-nl"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/2323309"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5206:5206"
     volumes:
       - /run/postgresql/server/nl:/run/postgresql
     depends_on:
@@ -1805,8 +1687,6 @@ services:
       SERVER_ID: "lost-server-hr"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/214885"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5207:5207"
     volumes:
       - /run/postgresql/server/hr:/run/postgresql
     depends_on:
@@ -1835,8 +1715,6 @@ services:
       SERVER_ID: "lost-server-lu"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/2171347"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5208:5208"
     volumes:
       - /run/postgresql/server/lu:/run/postgresql
     depends_on:
@@ -1865,8 +1743,6 @@ services:
       SERVER_ID: "lost-server-hu"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/21335"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5209:5209"
     volumes:
       - /run/postgresql/server/hu:/run/postgresql
     depends_on:
@@ -1895,8 +1771,6 @@ services:
       SERVER_ID: "lost-server-lv"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/72594"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5210:5210"
     volumes:
       - /run/postgresql/server/lv:/run/postgresql
     depends_on:
@@ -1925,8 +1799,6 @@ services:
       SERVER_ID: "lost-server-pl"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/49715"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5211:5211"
     volumes:
       - /run/postgresql/server/pl:/run/postgresql
     depends_on:
@@ -1955,8 +1827,6 @@ services:
       SERVER_ID: "lost-server-gr"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/192307"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5212:5212"
     volumes:
       - /run/postgresql/server/gr:/run/postgresql
     depends_on:
@@ -1985,8 +1855,6 @@ services:
       SERVER_ID: "lost-server-lt"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/72596"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5213:5213"
     volumes:
       - /run/postgresql/server/lt:/run/postgresql
     depends_on:
@@ -2015,8 +1883,6 @@ services:
       SERVER_ID: "lost-server-pt"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/295480"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5214:5214"
     volumes:
       - /run/postgresql/server/pt:/run/postgresql
     depends_on:
@@ -2045,8 +1911,6 @@ services:
       SERVER_ID: "lost-server-se"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/52822"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5215:5215"
     volumes:
       - /run/postgresql/server/se:/run/postgresql
     depends_on:
@@ -2075,8 +1939,6 @@ services:
       SERVER_ID: "lost-server-es"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/1311341"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5216:5216"
     volumes:
       - /run/postgresql/server/es:/run/postgresql
     depends_on:
@@ -2105,8 +1967,6 @@ services:
       SERVER_ID: "lost-server-dk"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/50046"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5217:5217"
     volumes:
       - /run/postgresql/server/dk:/run/postgresql
     depends_on:
@@ -2135,8 +1995,6 @@ services:
       SERVER_ID: "lost-server-bg"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/186382"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5218:5218"
     volumes:
       - /run/postgresql/server/bg:/run/postgresql
     depends_on:
@@ -2165,8 +2023,6 @@ services:
       SERVER_ID: "lost-server-at"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/16239"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5219:5219"
     volumes:
       - /run/postgresql/server/at:/run/postgresql
     depends_on:
@@ -2195,8 +2051,6 @@ services:
       SERVER_ID: "lost-server-it"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/365331"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5220:5220"
     volumes:
       - /run/postgresql/server/it:/run/postgresql
     depends_on:
@@ -2225,8 +2079,6 @@ services:
       SERVER_ID: "lost-server-ie"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/62273"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5221:5221"
     volumes:
       - /run/postgresql/server/ie:/run/postgresql
     depends_on:
@@ -2255,8 +2107,6 @@ services:
       SERVER_ID: "lost-server-fi"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/54224"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5222:5222"
     volumes:
       - /run/postgresql/server/fi:/run/postgresql
     depends_on:
@@ -2285,8 +2135,6 @@ services:
       SERVER_ID: "lost-server-cy"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/307787"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5223:5223"
     volumes:
       - /run/postgresql/server/cy:/run/postgresql
     depends_on:
@@ -2315,8 +2163,6 @@ services:
       SERVER_ID: "lost-server-be"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/52411"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5224:5224"
     volumes:
       - /run/postgresql/server/be:/run/postgresql
     depends_on:
@@ -2345,8 +2191,6 @@ services:
       SERVER_ID: "lost-server-fr"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/2202162"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5225:5225"
     volumes:
       - /run/postgresql/server/fr:/run/postgresql
     depends_on:
@@ -2375,8 +2219,6 @@ services:
       SERVER_ID: "lost-server-si"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/218657"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5226:5226"
     volumes:
       - /run/postgresql/server/si:/run/postgresql
     depends_on:
@@ -2405,8 +2247,6 @@ services:
       SERVER_ID: "lost-server-mt"
       SERVICE_AREA: "https://www.openstreetmap.org/relation/365307"
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:5227:5227"
     volumes:
       - /run/postgresql/server/mt:/run/postgresql
     depends_on:

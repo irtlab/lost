@@ -48,8 +48,6 @@ services:
       SERVICE_AREA: "{{ url_prefix }}/{{ node['osmId'] }}"
 {% endif %}
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"
-    ports:
-      - "127.0.0.1:{{ attrs['$port'] }}:{{ attrs['$port'] }}"
     volumes:
       - /run/postgresql/server/{{ attrs['$path'] }}:/run/postgresql
     depends_on:
