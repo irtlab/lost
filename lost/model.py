@@ -8,7 +8,8 @@ from jinja2 import Environment
 from .osm import search_overpass_by_id, extract_boundary
 
 
-DATA_DIR=os.path.realpath(os.path.join(os.path.dirname(__file__), '../data'))
+ROOT_DIR=os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+DATA_DIR=os.path.join(ROOT_DIR, 'data')
 
 
 class PortGenerator:
@@ -61,7 +62,7 @@ def traverse(name: str, node: dict, ports: PortGenerator | None = None, path=['/
 
 @click.group(help='LoST model')
 @click.pass_context
-@click.option('--model', '-m', envvar='MODEL', default=f'{DATA_DIR}/model.json', help='JSON model file')
+@click.option('--model', '-m', envvar='MODEL', default=f'{ROOT_DIR}/model.json', help='JSON model file')
 @click.option('--url-prefix', '-u', envvar='URL_PREFIX', default='https://www.openstreetmap.org')
 def cli(ctx, model, url_prefix):
     click.echo(f'Loading model file {model}...')
@@ -74,9 +75,9 @@ def cli(ctx, model, url_prefix):
 
 
 @cli.command(help='Generate Docker compose file')
-@click.option('--template', '-t', envvar='TEMPLATE', default=f'{DATA_DIR}/compose.yml.jinja2', help='Compose YAML template')
-@click.option('--output', '-o', envvar='OUTPUT', default=f'{DATA_DIR}/compose.yml', help='Compose YAML file')
-@click.option('--url-map', '-u', envvar='URL_MAP', default=f'{DATA_DIR}/url-map.json', help='URL map file')
+@click.option('--template', '-t', envvar='TEMPLATE', default=f'{ROOT_DIR}/compose.yml.jinja2', help='Compose YAML template')
+@click.option('--output', '-o', envvar='OUTPUT', default=f'{ROOT_DIR}/compose.yml', help='Compose YAML file')
+@click.option('--url-map', '-u', envvar='URL_MAP', default=f'{ROOT_DIR}/url-map.json', help='URL map file')
 @click.pass_obj
 def compose(obj, template, output, url_map):
     ports = PortGenerator()

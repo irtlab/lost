@@ -8,7 +8,7 @@ if [ -n "$SERVICE_AREA" ] ; then
 fi
 
 if [ -n "$LOAD_SHAPES" ] ; then
-    lost-server load "$LOAD_SHAPES" --url-map data/url-map.json
+    lost-server load "$LOAD_SHAPES" --url-map url-map.json
 fi
 
 exec lost-server start $@
