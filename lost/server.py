@@ -293,12 +293,13 @@ db.cli(cli)
 
 
 @cli.command(help='Start LoST server')
+@click.option('--ip', '-i', type=str, envvar='IP', default='127.0.0.1', help='IP address to listen on', show_default=True)
 @click.option('--port', '-p', type=int, envvar='PORT', default=5000, help='Port number to listen on', show_default=True)
 @click.option('--geo-table', '-g', default='mapping', envvar='GEO_TABLE', help='Name of geographic mapping table', show_default=True)
 @click.option('--civic-table', '-c', envvar='CIVIC_TABLE', help='Name of civic address mapping table', show_default=True)
 @click.option('--server-id', '-i', default='lost-server', envvar='SERVER_ID', help='Unique ID of the LoST server', show_default=True)
 @click.option('--authoritative', '-a', envvar='AUTHORITATIVE', help='URI of the shape for which the server is authoritative')
-def start(port, geo_table, civic_table, server_id, authoritative):
+def start(ip, port, geo_table, civic_table, server_id, authoritative):
     global lost_server
     
     print("Instantiating a LoST server for the 'geodetic-2d' profile")
@@ -310,7 +311,7 @@ def start(port, geo_table, civic_table, server_id, authoritative):
 
     app.config['server-id'] = server_id
     app.config['db'] = db.pool
-    app.run('0.0.0.0', port, debug=True, threaded=True, use_reloader=True)
+    app.run(ip, port, debug=True, threaded=True, use_reloader=True)
 
 
 def update_db(geometry, attrs, url_map):

@@ -33,6 +33,7 @@ services:
     container_name: lost-server-{{ id }}
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
 {% if attrs['profile'] %}
     profiles: [ {{ attrs['profile'] }} ]
 {% endif %}
@@ -43,7 +44,7 @@ services:
       LOAD_SHAPES: "{{ node['loadShapes'] }}"
 {% endif %}
 {% if node['osmId'] %}
-{% set _ = ports.map(url_prefix + '/' + node['osmId'], "http://lost-server-" + id + ':' + str(attrs['$port'])) %}
+{% set _ = ports.map(url_prefix + '/' + node['osmId'], "http://localhost" + ':' + str(attrs['$port'])) %}
       SERVICE_AREA: "{{ url_prefix }}/{{ node['osmId'] }}"
 {% endif %}
       DB_URL: "user=lost-server host=/run/postgresql dbname=lost"

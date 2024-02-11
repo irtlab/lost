@@ -28,6 +28,7 @@ services:
     container_name: lost-server-root
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     environment:
       PORT: 5000
       SERVER_ID: "lost-server-root"
@@ -56,6 +57,7 @@ services:
     container_name: lost-server-us
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5100
@@ -86,6 +88,7 @@ services:
     container_name: lost-server-us-al
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5101
@@ -115,6 +118,7 @@ services:
     container_name: lost-server-us-ak
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5102
@@ -144,6 +148,7 @@ services:
     container_name: lost-server-us-az
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5103
@@ -173,6 +178,7 @@ services:
     container_name: lost-server-us-ar
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5104
@@ -202,6 +208,7 @@ services:
     container_name: lost-server-us-ca
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5105
@@ -231,6 +238,7 @@ services:
     container_name: lost-server-us-co
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5106
@@ -260,6 +268,7 @@ services:
     container_name: lost-server-us-ct
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5107
@@ -289,6 +298,7 @@ services:
     container_name: lost-server-us-de
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5108
@@ -318,6 +328,7 @@ services:
     container_name: lost-server-us-fl
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5109
@@ -347,6 +358,7 @@ services:
     container_name: lost-server-us-ga
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5110
@@ -376,6 +388,7 @@ services:
     container_name: lost-server-us-hi
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5111
@@ -405,6 +418,7 @@ services:
     container_name: lost-server-us-id
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5112
@@ -434,6 +448,7 @@ services:
     container_name: lost-server-us-il
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5113
@@ -463,6 +478,7 @@ services:
     container_name: lost-server-us-in
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5114
@@ -492,6 +508,7 @@ services:
     container_name: lost-server-us-ia
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5115
@@ -521,6 +538,7 @@ services:
     container_name: lost-server-us-ks
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5116
@@ -550,6 +568,7 @@ services:
     container_name: lost-server-us-ky
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5117
@@ -579,6 +598,7 @@ services:
     container_name: lost-server-us-la
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5118
@@ -608,6 +628,7 @@ services:
     container_name: lost-server-us-me
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5119
@@ -637,6 +658,7 @@ services:
     container_name: lost-server-us-md
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5120
@@ -666,6 +688,7 @@ services:
     container_name: lost-server-us-ma
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5121
@@ -695,6 +718,7 @@ services:
     container_name: lost-server-us-mi
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5122
@@ -724,6 +748,7 @@ services:
     container_name: lost-server-us-mn
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5123
@@ -753,6 +778,7 @@ services:
     container_name: lost-server-us-ms
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5124
@@ -782,6 +808,7 @@ services:
     container_name: lost-server-us-mo
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5125
@@ -811,6 +838,7 @@ services:
     container_name: lost-server-us-mt
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5126
@@ -840,6 +868,7 @@ services:
     container_name: lost-server-us-ne
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5127
@@ -869,6 +898,7 @@ services:
     container_name: lost-server-us-nv
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5128
@@ -898,6 +928,7 @@ services:
     container_name: lost-server-us-nh
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5129
@@ -927,6 +958,7 @@ services:
     container_name: lost-server-us-nj
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5130
@@ -956,6 +988,7 @@ services:
     container_name: lost-server-us-nm
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5131
@@ -985,6 +1018,7 @@ services:
     container_name: lost-server-us-ny
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5132
@@ -1014,6 +1048,7 @@ services:
     container_name: lost-server-us-nc
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5133
@@ -1043,6 +1078,7 @@ services:
     container_name: lost-server-us-nd
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5134
@@ -1072,6 +1108,7 @@ services:
     container_name: lost-server-us-oh
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5135
@@ -1101,6 +1138,7 @@ services:
     container_name: lost-server-us-ok
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5136
@@ -1130,6 +1168,7 @@ services:
     container_name: lost-server-us-or
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5137
@@ -1159,6 +1198,7 @@ services:
     container_name: lost-server-us-pa
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5138
@@ -1188,6 +1228,7 @@ services:
     container_name: lost-server-us-ri
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5139
@@ -1217,6 +1258,7 @@ services:
     container_name: lost-server-us-sc
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5140
@@ -1246,6 +1288,7 @@ services:
     container_name: lost-server-us-sd
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5141
@@ -1275,6 +1318,7 @@ services:
     container_name: lost-server-us-tn
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5142
@@ -1304,6 +1348,7 @@ services:
     container_name: lost-server-us-tx
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5143
@@ -1333,6 +1378,7 @@ services:
     container_name: lost-server-us-ut
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5144
@@ -1362,6 +1408,7 @@ services:
     container_name: lost-server-us-vt
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5145
@@ -1391,6 +1438,7 @@ services:
     container_name: lost-server-us-va
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5146
@@ -1420,6 +1468,7 @@ services:
     container_name: lost-server-us-wa
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5147
@@ -1449,6 +1498,7 @@ services:
     container_name: lost-server-us-wv
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5148
@@ -1478,6 +1528,7 @@ services:
     container_name: lost-server-us-wi
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5149
@@ -1507,6 +1558,7 @@ services:
     container_name: lost-server-us-wy
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5150
@@ -1536,6 +1588,7 @@ services:
     container_name: lost-server-us-dc
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ us ]
     environment:
       PORT: 5151
@@ -1565,6 +1618,7 @@ services:
     container_name: lost-server-de
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5201
@@ -1594,6 +1648,7 @@ services:
     container_name: lost-server-cz
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5202
@@ -1623,6 +1678,7 @@ services:
     container_name: lost-server-ro
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5203
@@ -1652,6 +1708,7 @@ services:
     container_name: lost-server-ee
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5204
@@ -1681,6 +1738,7 @@ services:
     container_name: lost-server-sk
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5205
@@ -1710,6 +1768,7 @@ services:
     container_name: lost-server-nl
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5206
@@ -1739,6 +1798,7 @@ services:
     container_name: lost-server-hr
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5207
@@ -1768,6 +1828,7 @@ services:
     container_name: lost-server-lu
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5208
@@ -1797,6 +1858,7 @@ services:
     container_name: lost-server-hu
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5209
@@ -1826,6 +1888,7 @@ services:
     container_name: lost-server-lv
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5210
@@ -1855,6 +1918,7 @@ services:
     container_name: lost-server-pl
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5211
@@ -1884,6 +1948,7 @@ services:
     container_name: lost-server-gr
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5212
@@ -1913,6 +1978,7 @@ services:
     container_name: lost-server-lt
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5213
@@ -1942,6 +2008,7 @@ services:
     container_name: lost-server-pt
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5214
@@ -1971,6 +2038,7 @@ services:
     container_name: lost-server-se
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5215
@@ -2000,6 +2068,7 @@ services:
     container_name: lost-server-es
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5216
@@ -2029,6 +2098,7 @@ services:
     container_name: lost-server-dk
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5217
@@ -2058,6 +2128,7 @@ services:
     container_name: lost-server-bg
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5218
@@ -2087,6 +2158,7 @@ services:
     container_name: lost-server-at
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5219
@@ -2116,6 +2188,7 @@ services:
     container_name: lost-server-it
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5220
@@ -2145,6 +2218,7 @@ services:
     container_name: lost-server-ie
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5221
@@ -2174,6 +2248,7 @@ services:
     container_name: lost-server-fi
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5222
@@ -2203,6 +2278,7 @@ services:
     container_name: lost-server-cy
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5223
@@ -2232,6 +2308,7 @@ services:
     container_name: lost-server-be
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5224
@@ -2261,6 +2338,7 @@ services:
     container_name: lost-server-fr
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5225
@@ -2290,6 +2368,7 @@ services:
     container_name: lost-server-si
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5226
@@ -2319,6 +2398,7 @@ services:
     container_name: lost-server-mt
     image: janakj.net/lost/server
     restart: always
+    network_mode: "host"
     profiles: [ eu ]
     environment:
       PORT: 5227
