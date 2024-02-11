@@ -1,0 +1,7 @@
+/.git
+/lost.egg-info
+/Dockerfile*
+/.gitignore
+/.venv
+/.env
+/.dockerignore
