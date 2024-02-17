@@ -183,7 +183,6 @@ class GeographicLoSTServer(LoSTServer):
 
             # Not a leaf server in proxy mode
             else:
-                print("proxy")
                 next_server = attrs['uri']
                 return self.proxy_request(next_server, req)
 
