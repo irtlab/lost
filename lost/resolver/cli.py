@@ -3,6 +3,8 @@ import click
 from .. import db
 from .. import osm
 from . import LoSTResolver, create_app, resolver
+from flask import Flask, request
+from .handler import handler
 
 
 @click.group(help='LoST resolver')
@@ -49,5 +51,9 @@ def start(port, root_server, frontend, backend, image_dir):
         click.echo('Serving backend APIs')
 
     app = create_app(frontend=frontend, backend=backend, image_dir=image_dir)
+    
+    # Have Post Requests to the Resolver be handled by the handler() function in handler.py 
+    app.add_url_rule('/', 'handler', handler, methods=['POST'])
+
     app.config['db'] = db.pool
     app.run('0.0.0.0', port, debug=True, threaded=True, use_debugger=False)
