@@ -170,8 +170,7 @@ class GeographicLoSTServer(LoSTServer):
 
             row = cur.fetchone()
         
-        # Row will be None if no rows are returned, meaning there is no 'lost' service in the mapping table.
-        if row:
+        if row is not None:
             attrs = row[3]
             # Not a leaf server and in redirect mode, so send redirect response
             if self.redirect:
@@ -186,7 +185,7 @@ class GeographicLoSTServer(LoSTServer):
                 next_server = attrs['uri']
                 return self.proxy_request(next_server, req)
 
-        elif row is None:
+        else:
             # It is a leaf server, construct and return the findServiceResponse response
             with self.db.connection() as con:
                 cur = con.execute('''
