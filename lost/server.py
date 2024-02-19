@@ -20,6 +20,7 @@ from .osm import extract_boundary
 from . import osm
 from .guid import GUID
 import json
+import requests
 
 
 # Instances of LoST servers for various coodinate systems, e.g., geodetic-2d and
@@ -85,6 +86,7 @@ class GeographicLoSTServer(LoSTServer):
 
     def check_authority(self, req: lxml.objectify.ObjectifiedElement):
         pass
+    
 
     # def check_authority(self, req: lxml.objectify.ObjectifiedElement):
     #     with self.db.connection() as con:
@@ -156,7 +158,7 @@ class GeographicLoSTServer(LoSTServer):
         if geom.tag != f'{{{GML_NAMESPACE}}}Point':
             raise GeometryNotImplemented(f'Unsupported geometry type {geom.tag}')
 
-        lat, lon = (geom.pos.text or '').strip().split()    
+        lat, lon = (geom.pos.text or '').strip().split()
         p = f'Point({lon} {lat})'
         with self.db.connection() as con:
             cur = con.execute('''
@@ -167,31 +169,73 @@ class GeographicLoSTServer(LoSTServer):
                 (p, service))
 
             row = cur.fetchone()
+        
+        # Row will be None if no rows are returned, meaning there is no 'lost' service in the mapping table.
+        if row:
+            attrs = row[3]
+            # Not a leaf server and in redirect mode, so send redirect response
+            if self.redirect:
+                redirect_res = Element(f'{{{LOST_NAMESPACE}}}redirect', nsmap=NAMESPACE_MAP)
+                redirect_res.set('target', attrs['uri'])
+                redirect_res.set('source', self.server_id)
+                redirect_res.set('message', 'Redirecting to the next more specific server.')
+                return redirect_res
 
-        if row is None:
-            raise NotFound('No suitable mapping found')
+            # Not a leaf server in proxy mode
+            else:
+                next_server = attrs['uri']
+                return self.proxy_request(next_server, req)
 
-        id, service, updated, attrs, shape = row
+        elif row is None:
+            # It is a leaf server, construct and return the findServiceResponse response
+            with self.db.connection() as con:
+                cur = con.execute('''
+                    SELECT m.id, m.srv, m.updated, m.attrs, ST_AsGML(3, s.geometries, 5, 17) AS shape
+                    FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
+                    WHERE  ST_Contains(s.geometries, ST_GeomFromText(%s, 4326))''',
+                    (p,))
 
-        res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
-        mapping = SubElement(res, 'mapping',
-            source=self.server_id,
-            sourceId=str(id),
-            lastUpdated=updated.isoformat(),
-            expires=(datetime.now() + timedelta(days=1)).isoformat())
+            row = cur.fetchone()
+            
+            if row is None:
+                # No suitable mapping found, return an error
+                error_res = Element(f'{{{LOST_NAMESPACE}}}error', nsmap=NAMESPACE_MAP)
+                error_res.set('message', 'No suitable mapping found.')
+                return error_res
 
-        if 'displayName' in attrs:
-            dn = SubElement(mapping, 'displayName')
-            dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
-            dn.text = attrs['displayName']
+            attrs = row[3]
+            res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
+            mapping = SubElement(res, 'mapping', source=self.server_id, sourceId=str(row[0]), lastUpdated=row[2].isoformat(), expires=(datetime.now() + timedelta(days=1)).isoformat())
 
-        SubElement(mapping, 'service').text = service
-        mapping.append(serviceBoundary(shape))
+            if 'displayName' in attrs:
+                dn = SubElement(mapping, 'displayName')
+                dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
+                dn.text = attrs['displayName']
 
-        for uri in attrs.get('uri', []):
-            SubElement(mapping, 'uri').text = uri
+            SubElement(mapping, 'service').text = row[1]
+            mapping.append(serviceBoundary(row[4]))
 
-        return res
+            if 'uri' in attrs:
+                for uri in attrs['uri']:
+                    SubElement(mapping, 'uri').text = uri
+            return res
+
+
+    def proxy_request(self, server_uri, original_request):
+        headers = {'Content-Type': 'application/lost+xml'}
+        try:
+            request_data = lxml.etree.tostring(original_request, pretty_print=True).decode()
+            response = requests.post(server_uri, data=request_data, headers=headers)
+            
+            if response.status_code == 200:
+                response_xml = lxml.etree.fromstring(response.content)
+                response_obj = lxml.objectify.fromstring(lxml.etree.tostring(response_xml))
+                return response_obj
+
+        except Exception as e:
+            error_res = Element(f'{{{LOST_NAMESPACE}}}error', nsmap=NAMESPACE_MAP)
+            error_res.set('message', 'Proxy failed.')
+            return error_res
 
 
 class CivicLoSTServer(LoSTServer):
