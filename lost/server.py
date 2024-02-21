@@ -118,32 +118,82 @@ class GeographicLoSTServer(LoSTServer):
                     and m.srv = %s''',
                 (lxml.etree.tostring(geom).decode('UTF-8'), service))
 
-            row = cur.fetchone()
+            rows = cur.fetchall()
+        
+        # It is not a leaf server. Proxy request to all downstream servers and return responses
+        if rows:
+            uri = rows[0][3]['uri']
 
-        if row is None:
-            raise NotFound('No suitable mapping found')
+            # Not a leaf server and in redirect mode, so send redirect response
+            if self.redirect:
+                redirect_res = Element(f'{{{LOST_NAMESPACE}}}redirect', nsmap=NAMESPACE_MAP)
+                redirect_res.set('target', uri)
+                redirect_res.set('source', self.server_id)
+                redirect_res.set('message', 'Redirecting to the next more specific server.')
+                return redirect_res
 
-        id, service, updated, attrs, shape = row
+            # We are in proxy mode. Check if there is only one downstream server
+            if len(rows) == 1:
+                # There is only one downstream server, proxy the request to the single downstream server
+                return self.proxy_request(uri, req)
+                
+            else:
+                # Handle multiple downstream servers
+                group_res = Element(f'{{{LOST_NAMESPACE}}}findIntersectResponses', nsmap=NAMESPACE_MAP)
+                for row in rows:
+                    uri = row[3]['uri']
+                    # Proxy the request to each downstream server
+                    proxy_response = self.proxy_request(uri, req)
+                    if proxy_response is not None:   
+                        group_res.append(proxy_response)
 
-        res = Element(f'{{{LOST_NAMESPACE}}}findIntersectResponse', nsmap=NAMESPACE_MAP)
-        mapping = SubElement(res, 'mapping',
-            source=self.server_id,
-            sourceId=str(id),
-            lastUpdated=updated.isoformat(),
-            expires=(datetime.now() + timedelta(days=1)).isoformat())
+                return group_res
 
-        if 'displayName' in attrs:
-            dn = SubElement(mapping, 'displayName')
-            dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
-            dn.text = attrs['displayName']
+        else:
+            # It is a leaf server
+            with self.db.connection() as con:
+                cur = con.execute('''
+                    SELECT m.id, m.srv, m.updated, m.attrs, ST_AsGML(3, s.geometries, 5, 17)
+                    FROM   server.mapping AS m JOIN shape AS s ON m.shape=s.id
+                    WHERE  ST_Intersects(s.geometries, ST_GeomFromGML(%s))''',
+                    (lxml.etree.tostring(geom).decode('UTF-8'),))
 
-        SubElement(mapping, 'service').text = service
-        mapping.append(serviceBoundary(shape))
+                row = cur.fetchone()
 
-        for uri in attrs.get('uri', []):
-            SubElement(mapping, 'uri').text = uri
+            if row is None:
+                # No suitable mapping found, return a error
+                errors_res = Element(f'{{{LOST_NAMESPACE}}}errors', nsmap=NAMESPACE_MAP)
+                errors_res.set('source', self.server_id)
 
-        return res
+                error = SubElement(errors_res, f'{{{LOST_NAMESPACE}}}locationInvalid')
+                error.set('message', 'No suitable mapping found.')
+                error.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')
+                
+                return errors_res
+                
+
+            # Construct and return a findIntersectResponse
+            id, service, updated, attrs, shape = row
+            res = Element(f'{{{LOST_NAMESPACE}}}findIntersectResponse', nsmap=NAMESPACE_MAP)
+            mapping = SubElement(res, 'mapping',
+                source=self.server_id,
+                sourceId=str(id),
+                lastUpdated=updated.isoformat(),
+                expires=(datetime.now() + timedelta(days=1)).isoformat())
+
+            if 'displayName' in attrs:
+                dn = SubElement(mapping, 'displayName')
+                dn.set(f'{{{XML_NAMESPACE}}}lang', 'en')
+                dn.text = attrs['displayName']
+
+            SubElement(mapping, 'service').text = service
+            mapping.append(serviceBoundary(shape))
+
+            if 'uri' in attrs:
+                uri_element = SubElement(mapping, 'uri')
+                uri_element.text = attrs['uri']
+
+            return res    
 
     def findService(self, req: lxml.objectify.ObjectifiedElement):
         service = req.service.text
@@ -172,6 +222,7 @@ class GeographicLoSTServer(LoSTServer):
         
         if row is not None:
             attrs = row[3]
+
             # Not a leaf server and in redirect mode, so send redirect response
             if self.redirect:
                 redirect_res = Element(f'{{{LOST_NAMESPACE}}}redirect', nsmap=NAMESPACE_MAP)
@@ -197,10 +248,15 @@ class GeographicLoSTServer(LoSTServer):
             row = cur.fetchone()
             
             if row is None:
-                # No suitable mapping found, return an error
-                error_res = Element(f'{{{LOST_NAMESPACE}}}error', nsmap=NAMESPACE_MAP)
-                error_res.set('message', 'No suitable mapping found.')
-                return error_res
+                # No suitable mapping found, return a error
+                errors_res = Element(f'{{{LOST_NAMESPACE}}}errors', nsmap=NAMESPACE_MAP)
+                errors_res.set('source', self.server_id)
+
+                error = SubElement(errors_res, f'{{{LOST_NAMESPACE}}}locationInvalid')
+                error.set('message', 'No suitable mapping found.')
+                error.set('{http://www.w3.org/XML/1998/namespace}lang', 'en')
+                
+                return errors_res
 
             attrs = row[3]
             res = Element(f'{{{LOST_NAMESPACE}}}findServiceResponse', nsmap=NAMESPACE_MAP)
@@ -221,10 +277,9 @@ class GeographicLoSTServer(LoSTServer):
 
 
     def proxy_request(self, server_uri, original_request):
-        headers = {'Content-Type': 'application/lost+xml'}
         try:
             request_data = lxml.etree.tostring(original_request, pretty_print=True).decode()
-            response = requests.post(server_uri, data=request_data, headers=headers)
+            response = requests.post(server_uri, data=request_data, headers={'Content-Type': LOST_MIME_TYPE})
             
             if response.status_code == 200:
                 response_xml = lxml.etree.fromstring(response.content)
