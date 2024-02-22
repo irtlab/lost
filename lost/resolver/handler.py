@@ -7,6 +7,7 @@ from flask import request, Response, Flask
 import requests
 from lxml import etree, objectify
 import os
+from ..  import LOST_MIME_TYPE, LOST_NAMESPACE, NAMESPACE_MAP
 
 app = Flask(__name__)
 
@@ -14,10 +15,9 @@ app = Flask(__name__)
 def handler():
     server_url = 'http://localhost:5000'
     xml_data = request.data
-    headers = {'Content-Type': 'application/lost+xml'}
     
     while True:
-        response = requests.post(server_url, data=xml_data, headers=headers)
+        response = requests.post(server_url, data=xml_data, headers={'Content-Type': LOST_MIME_TYPE})
         
         if response.status_code == 200:
             tree = etree.fromstring(response.content)
@@ -34,7 +34,7 @@ def handler():
             print(f"Error: Received status code {response.status_code}")
             break
 
-    return Response(response.content, mimetype='application/lost+xml')
+    return Response(response.content, mimetype=LOST_MIME_TYPE)
 
 if __name__ == '__main__':
     app.run(debug=True)

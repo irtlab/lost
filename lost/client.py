@@ -98,8 +98,17 @@ class LoSTClient:
         res = self.submit(doc)
 
         type_ = res.tag[len(LOST_NAMESPACE) + 2:]
-        if type_ != 'findIntersectResponse':
+        if type_ != 'findIntersectResponse' and type_ != 'findIntersectResponses':
             raise ServerError(f'Unexpected response type "{type_}"')
-
-        return [uri.text for uri in res.mapping.uri]
+        
+        if type_ == 'findIntersectResponse':
+            return [uri.text for uri in res.mapping.uri]
+        
+        uris = []
+        if type_ == 'findIntersectResponses':
+            for response in res.findall('.//{{{}}}findIntersectResponse'.format(LOST_NAMESPACE)):
+                uri_element = response.find('.//{{{}}}uri'.format(LOST_NAMESPACE))
+                if uri_element is not None:
+                    uris.append(uri_element.text)
+            return uris
         
