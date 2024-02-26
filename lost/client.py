@@ -5,6 +5,7 @@ from lxml.etree import Element, SubElement
 from . import LOST_MIME_TYPE, LOST_NAMESPACE, NAMESPACE_MAP, GML_NAMESPACE, SRS_URN
 from .geometry import Point
 from .errors import LoSTError, ServerError
+import json
 
 
 class LoSTClient:
@@ -104,11 +105,22 @@ class LoSTClient:
         if type_ == 'findIntersectResponse':
             return [uri.text for uri in res.mapping.uri]
         
+
         uris = []
+        errors = []
+
         if type_ == 'findIntersectResponses':
             for response in res.findall('.//{{{}}}findIntersectResponse'.format(LOST_NAMESPACE)):
                 uri_element = response.find('.//{{{}}}uri'.format(LOST_NAMESPACE))
                 if uri_element is not None:
                     uris.append(uri_element.text)
-            return uris
+
+            error_elements = res.findall('.//{{{}}}errors'.format(LOST_NAMESPACE))
+            for error in error_elements:
+                locationInvalid_elements = error.findall('.//{{{}}}locationInvalid'.format(LOST_NAMESPACE))
+                for locationInvalid in locationInvalid_elements:
+                    errors.append(locationInvalid.get('message'))
+            
+            return uris + errors
+
         
